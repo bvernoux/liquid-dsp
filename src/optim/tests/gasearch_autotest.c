@@ -72,7 +72,7 @@ void autotest_gasearch_peak()
 
     // get optimum utility
     gasearch_getopt(ga, prototype, &optimum_utility);
-    float v_opt[num_parameters];
+    LIQUID_VLA(float, v_opt, num_parameters);
     for (i=0; i<num_parameters; i++)
         v_opt[i] = chromosome_valuef(prototype, i);
 

@@ -86,7 +86,7 @@ void autotest_firpfb_crcf_copy()
     // run random samples through filter
     unsigned int i, num_samples = 80;
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         firpfb_crcf_push(q0, v);
     }
 
@@ -96,7 +96,7 @@ void autotest_firpfb_crcf_copy()
     // run random samples through filter
     for (i=0; i<num_samples; i++) {
         // random input channel and index
-        float complex v  = randnf() + _Complex_I*randnf();
+        liquid_float_complex v  = randnf() + _Complex_I*randnf();
         unsigned int idx = rand() % M;
 
         // push sample through each filter
@@ -104,10 +104,10 @@ void autotest_firpfb_crcf_copy()
         firpfb_crcf_push(q1, v);
 
         // compare outputs
-        float complex y0, y1;
+        liquid_float_complex y0, y1;
         firpfb_crcf_execute(q0, idx, &y0);
         firpfb_crcf_execute(q1, idx, &y1);
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy objects

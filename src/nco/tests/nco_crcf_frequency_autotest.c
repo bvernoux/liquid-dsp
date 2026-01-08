@@ -21,15 +21,17 @@
  */
 
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include "autotest/autotest.h"
 #include "liquid.h"
 
 // declare external arrays
-extern float complex nco_sincos_fsqrt1_2[];
-extern float complex nco_sincos_fsqrt1_3[];
-extern float complex nco_sincos_fsqrt1_5[];
-extern float complex nco_sincos_fsqrt1_7[];
+extern liquid_float_complex nco_sincos_fsqrt1_2[];
+extern liquid_float_complex nco_sincos_fsqrt1_3[];
+extern liquid_float_complex nco_sincos_fsqrt1_5[];
+extern liquid_float_complex nco_sincos_fsqrt1_7[];
 
 // autotest helper function
 //  _type       :   NCO type (e.g. LIQUID_NCO)
@@ -41,12 +43,12 @@ extern float complex nco_sincos_fsqrt1_7[];
 void nco_crcf_frequency_test(int             _type,
                              float           _phase,
                              float           _frequency,
-                             float complex * _sincos,
+                             liquid_float_complex * _sincos,
                              unsigned int    _num_samples,
                              float           _tol)
 {
     // create object
-    nco_crcf nco = nco_crcf_create(_type);
+    nco_crcf nco = nco_crcf_create((liquid_ncotype)_type);
 
     // set phase and frequency
     nco_crcf_set_phase(nco, _phase);
@@ -56,11 +58,11 @@ void nco_crcf_frequency_test(int             _type,
     unsigned int i;
     for (i=0; i<_num_samples; i++) {
         // compute complex output
-        float complex y_test;
+        liquid_float_complex y_test;
         nco_crcf_cexpf(nco, &y_test);
 
         // compare to expected output
-        float complex y = _sincos[i];
+        liquid_float_complex y = _sincos[i];
 
         // run tests
         CONTEND_DELTA( crealf(y_test), crealf(y), _tol );

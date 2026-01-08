@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <immintrin.h>
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 // sum squares, basic loop
 //  _v      :   input array [size: 1 x _n]
@@ -63,7 +64,7 @@ float liquid_sumsqf_avx(float *      _v,
     sum = _mm256_hadd_ps(sum, z);
 
     // aligned output array
-    float w[8] __attribute__((aligned(32)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 8, 32);
 
     _mm256_store_ps(w, sum);
     float total = w[0] + w[4];
@@ -118,7 +119,7 @@ float liquid_sumsqf_avxu(float *      _v,
     sum = _mm256_hadd_ps(sum, z);
 
     // aligned output array
-    float w[8] __attribute__((aligned(32)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 8, 32);
 
     _mm256_store_ps(w, sum);
     float total = w[0] + w[4];
@@ -147,7 +148,7 @@ float liquid_sumsqf(float *      _v,
 // sum squares, complex
 //  _v      :   input array [size: 1 x _n]
 //  _n      :   input length
-float liquid_sumsqcf(float complex * _v,
+float liquid_sumsqcf(liquid_float_complex * _v,
                      unsigned int    _n)
 {
     // simple method: type cast input as real pointer, run double

@@ -37,14 +37,14 @@ void autotest_firhilbf_decim()
          1.0000,  0.7071, -0.0000, -0.7071, -1.0000, -0.7071, -0.0000,  0.7071
     };
 
-    float complex test[16] = {
+    liquid_float_complex test[16] = {
          0.0000+J*-0.0055, -0.0000+J* 0.0231,  0.0000+J*-0.0605, -0.0000+J* 0.1459,
          0.0000+J*-0.5604, -0.7071+J*-0.7669, -0.7071+J* 0.7294,  0.7071+J* 0.7008,
          0.7071+J*-0.7064, -0.7071+J*-0.7064, -0.7071+J* 0.7064,  0.7071+J* 0.7064,
          0.7071+J*-0.7064, -0.7071+J*-0.7064, -0.7071+J* 0.7064,  0.7071+J* 0.7064
     };
 
-    float complex y[16];
+    LIQUID_VLA(liquid_float_complex, y, 16);
     unsigned int m=5;   // h_len = 4*m+1 = 21
     firhilbf ht = firhilbf_create(m,60.0f);
     float tol=0.005f;
@@ -75,7 +75,7 @@ void autotest_firhilbf_decim()
 //
 void autotest_firhilbf_interp()
 {
-    float complex x[16] = {
+    liquid_float_complex x[16] = {
          1.0000+J* 0.0000, -0.0000+J*-1.0000, -1.0000+J* 0.0000,  0.0000+J* 1.0000,
          1.0000+J*-0.0000, -0.0000+J*-1.0000, -1.0000+J* 0.0000,  0.0000+J* 1.0000,
          1.0000+J*-0.0000, -0.0000+J*-1.0000, -1.0000+J* 0.0000,  0.0000+J* 1.0000,
@@ -90,7 +90,7 @@ void autotest_firhilbf_interp()
     };
 
 
-    float y[32];
+    LIQUID_VLA(float, y, 32);
     unsigned int m=5;   // h_len = 4*m+1 = 21
     firhilbf ht = firhilbf_create(m,60.0f);
     float tol=0.005f;
@@ -132,12 +132,12 @@ void autotest_firhilbf_psd()
     unsigned int num_samples = h_len + 2*m + 8;
 
     unsigned int i;
-    float complex buf_0[num_samples  ];
-    float         buf_1[num_samples*2];
-    float complex buf_2[num_samples  ];
+    LIQUID_VLA(liquid_float_complex, buf_0, num_samples  );
+    LIQUID_VLA(float, buf_1, num_samples*2);
+    LIQUID_VLA(liquid_float_complex, buf_2, num_samples  );
 
     // generate the baseband signal (filter pulse)
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     float w = 0.36f * bw; // pulse bandwidth
     liquid_firdes_kaiser(h_len,w,80.0f,0.0f,h);
     for (i=0; i<num_samples; i++)
@@ -154,20 +154,20 @@ void autotest_firhilbf_psd()
 
     // verify input spectrum
     autotest_psd_s regions_orig[] = {
-      {.fmin=-0.5,    .fmax=-0.5*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-0.3*bw, .fmax=+0.3*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=+0.5*bw, .fmax=+0.5,    .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,    .fmax=(float)(-0.5*bw), .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(-0.3*bw), .fmax=(float)(+0.3*bw), .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=(float)(+0.5*bw), .fmax=+0.5f,    .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signal(buf_0, num_samples, regions_orig, 3,
         liquid_autotest_verbose ? "autotest/logs/firhilbf_orig.m" : NULL);
 
     // verify interpolated spectrum
     autotest_psd_s regions_interp[] = {
-      {.fmin=-0.5,          .fmax=-0.25-0.25*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-0.25-0.15*bw, .fmax=-0.25+0.15*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=-0.25+0.25*bw, .fmax=+0.25-0.25*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin= 0.25-0.15*bw, .fmax= 0.25+0.15*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin= 0.25+0.25*bw, .fmax= 0.5,          .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,          .fmax=(float)(-0.25-0.25*bw), .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(-0.25-0.15*bw), .fmax=(float)(-0.25+0.15*bw), .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=(float)(-0.25+0.25*bw), .fmax=(float)(+0.25-0.25*bw), .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(0.25-0.15*bw), .fmax=(float)(0.25+0.15*bw), .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=(float)(0.25+0.25*bw), .fmax=0.5f,          .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signalf(buf_1, 2*num_samples, regions_interp, 5,
         liquid_autotest_verbose ? "autotest/logs/firhilbf_interp.m" : NULL);
@@ -206,7 +206,7 @@ void autotest_firhilbf_copy_interp()
     unsigned int i;
     float y0[2], y1[2];
     for (i=0; i<80; i++) {
-        float complex x = randnf() + _Complex_I*randnf();
+        liquid_float_complex x = randnf() + _Complex_I*randnf();
         firhilbf_interp_execute(q0, x, y0);
     }
 
@@ -214,7 +214,7 @@ void autotest_firhilbf_copy_interp()
     firhilbf q1 = firhilbf_copy(q0);
 
     for (i=0; i<80; i++) {
-        float complex x = randnf() + _Complex_I*randnf();
+        liquid_float_complex x = randnf() + _Complex_I*randnf();
         firhilbf_interp_execute(q0, x, y0);
         firhilbf_interp_execute(q1, x, y1);
         if (liquid_autotest_verbose) {
@@ -236,8 +236,8 @@ void autotest_firhilbf_copy_decim()
 
     // run interpolator on random data
     unsigned int i;
-    float x[2];
-    float complex y0, y1;
+    LIQUID_VLA(float, x, 2);
+    liquid_float_complex y0, y1;
     for (i=0; i<80; i++) {
         x[0] = randnf();
         x[1] = randnf();
@@ -256,7 +256,7 @@ void autotest_firhilbf_copy_decim()
             printf("%3u : {%12.8f %12.8f} > %12.8f +j%12.8f, %12.8f +j%12.8f\n",
                     i, x[0], x[1], crealf(y0), cimagf(y0), crealf(y1), cimagf(y1));
         }
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy objects

@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // test multi-stage arbitrary resampler
 //   r  : resampling rate (output/input)
@@ -43,10 +44,10 @@ void testbench_msresamp2_crcf_interp(unsigned int _num_stages,
         buf_len += M;
         num_blocks++;
     }
-    float complex buf[buf_len]; // input buffer
+    LIQUID_VLA(liquid_float_complex, buf, buf_len); // input buffer
     unsigned int i;
     for (i=0; i<num_blocks; i++) {
-        float complex x = (i==0) ? 1.0f : 0.0f;
+        liquid_float_complex x = (i==0) ? 1.0f : 0.0f;
 
         // generate block of samples
         msresamp2_crcf_execute(resamp, &x, buf+ i*M);
@@ -63,11 +64,11 @@ void testbench_msresamp2_crcf_interp(unsigned int _num_stages,
     float f0 = _fc / (float)M;
     float f1 = 1.0f / (float)M - f0;
     autotest_psd_s regions[] = {
-        {.fmin=-0.5f, .fmax=-f1,   .pmin=   0, .pmax=-_as, .test_lo=0, .test_hi=1},
+        {.fmin=-0.5f, .fmax=-f1,   .pmin=0.0f, .pmax=-_as, .test_lo=0, .test_hi=1},
         {.fmin=  -f0, .fmax= f0,   .pmin=-0.1, .pmax= 0.1, .test_lo=1, .test_hi=1},
-        {.fmin=   f1, .fmax= 0.5f, .pmin=   0, .pmax=-_as, .test_lo=0, .test_hi=1},
+        {.fmin=   f1, .fmax= 0.5f, .pmin=0.0f, .pmax=-_as, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/msresamp2_crcf_interp_M%u_f%.3u_a%u.m",
         M, (int)(_fc*1000), (int)_as);
     liquid_autotest_validate_psd_signal(buf, buf_len, regions, 3,
@@ -102,7 +103,9 @@ void autotest_msresamp2_copy()
 
     // allocate buffers for output
     unsigned int M = 1 << num_stages; // interpolation factor
-    float complex v, y0[M], y1[M];
+    liquid_float_complex v;
+    LIQUID_VLA(liquid_float_complex, y0, M);
+    LIQUID_VLA(liquid_float_complex, y1, M);
 
     // push samples through original object
     unsigned int i, num_samples = 35;
@@ -119,7 +122,7 @@ void autotest_msresamp2_copy()
         v = randnf() + _Complex_I*randnf();
         msresamp2_crcf_execute(q0, &v, y0);
         msresamp2_crcf_execute(q1, &v, y1);
-        CONTEND_SAME_DATA(y0, y1, M*sizeof(float complex));
+        CONTEND_SAME_DATA(y0, y1, M*sizeof(liquid_float_complex));
     }
 
     // clean up allocated objects

@@ -145,9 +145,9 @@ void autotest_iirfiltsos_copy()
 
     // start running input through filter
     unsigned int i, num_samples = 80;
-    float complex y0, y1;
+    liquid_float_complex y0, y1;
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         iirfiltsos_crcf_execute(q0, v, &y0);
     }
 
@@ -156,12 +156,12 @@ void autotest_iirfiltsos_copy()
 
     // continue running through both filters
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         iirfiltsos_crcf_execute(q0, v, &y0);
         iirfiltsos_crcf_execute(q1, v, &y1);
 
         // compare result
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy filter objects

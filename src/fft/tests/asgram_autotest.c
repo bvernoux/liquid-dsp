@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include "autotest/autotest.h"
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 // check copy method
 void autotest_asgramcf_copy()
@@ -44,7 +45,7 @@ void autotest_asgramcf_copy()
     // generate a bunch of random noise samples
     unsigned int i;
     for (i=0; i<num_samples; i++) {
-        float complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
+        liquid_float_complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
         asgramcf_push(q0, v);
     }
 
@@ -53,7 +54,7 @@ void autotest_asgramcf_copy()
     asgramcf_autoscale_enable(q0);
     asgramcf_autoscale_enable(q1);
     for (i=0; i<num_samples; i++) {
-        float complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
+        liquid_float_complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
         asgramcf_push(q0, v);
         asgramcf_push(q1, v);
     }
@@ -63,7 +64,8 @@ void autotest_asgramcf_copy()
     }
 
     // get spectrum and compare outputs
-    char a0[nfft], a1[nfft];
+    LIQUID_VLA(char, a0, nfft);
+    LIQUID_VLA(char, a1, nfft);
     float pv0, pv1, pf0, pf1;
     asgramcf_execute(q0, a0, &pv0, &pf0);
     asgramcf_execute(q1, a1, &pv1, &pf1);

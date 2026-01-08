@@ -33,11 +33,11 @@
 //  _r      : roots (sorted), [size: _order   x 1]
 //  _ordre  : polynomial order
 void polyf_findroots_testbench(float *         _p,
-                               float complex * _r,
+                               liquid_float_complex * _r,
                                unsigned int    _order,
                                float           _tol)
 {
-    float complex roots[_order];
+    LIQUID_VLA(liquid_float_complex, roots, _order);
     polyf_findroots(_p,_order+1,roots);
 
     unsigned int i;
@@ -66,7 +66,7 @@ void autotest_polyf_findroots_real()
 {
     // basic roots, no complex values
     float         p[6] = {6,11,-33,-33,11,6};
-    float complex r[5] = {-3, -1, -1./3., 0.5, 2.};
+    liquid_float_complex r[5] = {-3, -1, -1./3., 0.5, 2.};
     polyf_findroots_testbench(p, r, 5, 1e-6f);
 }
 
@@ -75,7 +75,7 @@ void autotest_polyf_findroots_complex()
 
     // complex roots
     float         p[3] = {3,2,1};
-    float complex r[2] = {-1 + _Complex_I*M_SQRT2,
+    liquid_float_complex r[2] = {-1 + _Complex_I*M_SQRT2,
                           -1 - _Complex_I*M_SQRT2};
     polyf_findroots_testbench(p, r, 2, 1e-6f);
 }
@@ -85,7 +85,7 @@ void autotest_polyf_findroots_mix()
 
     // complex roots
     float         p[7] = {-1,6,5,4,3,2,1};
-    float complex r[6] = {
+    liquid_float_complex r[6] = {
 		-1.544928106217380,
 		-0.8438580445415772 + 1.251293921227189*_Complex_I,
 		-0.8438580445415772 - 1.251293921227189*_Complex_I,
@@ -111,7 +111,7 @@ void autotest_polyf_findroots_mix2()
          1.3681684434413909912109375000e-01,
          1.0689756833016872406005859375e-02,};
 
-    float complex r[10] = {
+    liquid_float_complex r[10] = {
        -17.67808709752869,
         -0.7645511425850682 + 0.4932343666704793*_Complex_I,
         -0.7645511425850682 - 0.4932343666704793*_Complex_I,
@@ -134,10 +134,10 @@ void xautotest_polycf_findroots_rand()
     unsigned int n=5;
     float tol=1e-4f;
 
-    float complex p[n];
-    float complex roots[n-1];
+    LIQUID_VLA(liquid_float_complex, p, n);
+    LIQUID_VLA(liquid_float_complex, roots, n-1);
 
-    float complex p_hat[n];
+    LIQUID_VLA(liquid_float_complex, p_hat, n);
 
     unsigned int i;
     for (i=0; i<n; i++)
@@ -145,7 +145,7 @@ void xautotest_polycf_findroots_rand()
 
     polycf_findroots(p,n,roots);
 
-    float complex roots_hat[n-1];
+    LIQUID_VLA(liquid_float_complex, roots_hat, n-1);
     // convert form...
     for (i=0; i<n-1; i++)
         roots_hat[i] = -roots[i];

@@ -48,6 +48,13 @@
 //     return 0;
 // }
 
+// C++ type mapping: char* -> const char* for string literal compatibility
+// Must be outside extern "C" block
+#ifdef __cplusplus
+template<typename T> struct liquid_argparse_type_t { typedef T type; };
+template<> struct liquid_argparse_type_t<char*> { typedef const char* type; };
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -67,21 +74,24 @@ extern "C" {
 // callback function pointer for custom type parsing
 typedef int (*liquid_argparse_callback)(const char * _optarg, void * _ref);
 
+// argument type enumeration (defined at file scope for C++ compatibility)
+enum liquid_arg_type {
+    TYPE_BOOL,
+    TYPE_INT,
+    TYPE_UINT,
+    TYPE_LONG,
+    TYPE_ULONG,
+    TYPE_FLOAT,
+    TYPE_DOUBLE,
+    TYPE_CHAR,
+    TYPE_STRING,
+    TYPE_CUSTOM
+};
+
 // argument
 struct liquid_arg_s
 {
-    enum {
-        TYPE_BOOL,
-        TYPE_INT,
-        TYPE_UINT,
-        TYPE_LONG,
-        TYPE_ULONG,
-        TYPE_FLOAT,
-        TYPE_DOUBLE,
-        TYPE_CHAR,
-        TYPE_STRING,
-        TYPE_CUSTOM
-    } type;
+    enum liquid_arg_type type;
     void *       ref;       // pointer to reference variable
     const char * varname;   // reference variable name
     char         opt;       // option character
@@ -305,16 +315,27 @@ int liquid_argparse_set(struct liquid_argparse_s * _q,
     struct liquid_argparse_s __parser;                                          \
     __parser.docstr = DOCSTR;                                                   \
     __parser.num_args = 0;                                                      \
-    sprintf(__parser.optstr,"hj"); /* ensure 'h', 'j' are reserved for help */  \
+    snprintf(__parser.optstr, sizeof(__parser.optstr), "hj"); /* ensure 'h', 'j' are reserved for help */  \
 
 // add option to list of arguments
+// Note: In C++ mode, char* string literals must be const char*
+#ifdef __cplusplus
+#define liquid_argparse_add(TYPE, VAR, DEFAULT, KEY, HELP, FUNC)                \
+    liquid_argparse_type_t<TYPE>::type VAR = DEFAULT;                           \
+    if (liquid_argparse_append(&__parser, #TYPE, (void*)&VAR, #VAR,             \
+        KEY, HELP, FUNC))                                                       \
+    {                                                                           \
+        return liquid_error(LIQUID_EICONFIG,"could not create argument");       \
+    }
+#else
 #define liquid_argparse_add(TYPE, VAR, DEFAULT, KEY, HELP, FUNC)                \
     TYPE VAR = DEFAULT; /* define and declare variable */                       \
     if (liquid_argparse_append(&__parser, #TYPE, (void*)&VAR, #VAR,             \
         KEY, HELP, FUNC))                                                       \
     {                                                                           \
         return liquid_error(LIQUID_EICONFIG,"could not create argument");       \
-    }                                                                           \
+    }
+#endif                                                                           \
 
 // parse input
 #define liquid_argparse_parse(argc,argv)                                        \

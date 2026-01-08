@@ -35,7 +35,7 @@ void autotest_polyf_fit_q3n3()
 
     float x[3] = {-1.0f, 0.0f, 1.0f};
     float y[3] = { 1.0f, 0.0f, 1.0f};
-    float p[3];
+    LIQUID_VLA(float, p, 3);
     float p_test[3] = {0.0f, 0.0f, 1.0f};
     float tol = 1e-3f;
 
@@ -63,7 +63,7 @@ void autotest_polyf_lagrange_issue165()
     unsigned int n=3;   // input vector size
     float x[3] = {-1.0f, 0.0f, 1.0f};
     float y[3] = {7.059105f, 24.998369f, 14.365907f};
-    float p[3];
+    LIQUID_VLA(float, p, 3);
     float tol = 1e-3f;
 
     polyf_fit_lagrange(x,y,n,p);
@@ -73,7 +73,7 @@ void autotest_polyf_lagrange_issue165()
     for (j=0; j<n; j++)
         printf("p[%3u] = %12.8f\n", j, p[j]);
 
-    float y_out[3];
+    LIQUID_VLA(float, y_out, 3);
     for (j=0; j<n; j++) {
         y_out[j] = polyf_val(p, n, x[j]);
         printf("y_out[%3u] = %12.8f exp=%12.8f\n", j, y_out[j], y[j]);
@@ -84,7 +84,7 @@ void autotest_polyf_lagrange_issue165()
     for (j=0; j<n; j++)
         printf("p_least_sq[%3u] = %12.8f\n", j, p[j]);
 
-    float y_least_sq[3];
+    LIQUID_VLA(float, y_least_sq, 3);
     for (j=0; j<n; j++) {
         y_least_sq[j] = polyf_val(p, n, x[j]);
         printf("y_least_sq[%3u] = %12.8f exp=%12.8f\n", j, y_least_sq[j], y[j]);
@@ -102,13 +102,13 @@ void autotest_polyf_lagrange()
 
     float x[3] = {1.0f, 2.0f, 3.0f};
     float y[3] = {1.0f, 8.0f, 27.0f};
-    float p[3];
+    LIQUID_VLA(float, p, 3);
     float tol = 1e-3;
     polyf_fit_lagrange(x,y,n,p);
     unsigned int j;
     for (j=0; j<n; j++)
         printf("p[%3u] = %12.8f\n", j, p[j]);
-    float y_out[3];
+    LIQUID_VLA(float, y_out, 3);
     for (j=0; j<n; j++) {
         y_out[j] = polyf_val(p, n, x[j]);
         printf("y_out[%3u] = %12.8f exp=%12.8f\n", j, y_out[j], y[j]);
@@ -122,7 +122,7 @@ void autotest_polyf_lagrange()
 void xautotest_polyf_expandbinomial_4()
 {
     float a[4] = { 3, 2, -5, 1 };
-    float c[5];
+    LIQUID_VLA(float, c, 5);
     float c_test[5] = { 1, 1, -19, -49, -30 };
     float tol = 1e-3f;
 
@@ -150,7 +150,7 @@ void xautotest_polyf_expandbinomial_4()
 void autotest_polyf_expandroots_4()
 {
     float roots[5] = { -2, -1, -4, 5, 3 };
-    float c[6];
+    LIQUID_VLA(float, c, 6);
     float c_test[6] = { 120, 146, 1, -27, -1, 1 };
     float tol = 1e-3f;
 
@@ -179,7 +179,7 @@ void autotest_polyf_expandroots_4()
 void autotest_polyf_expandroots_11()
 {
     float roots[11] = { -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11 };
-    float c[12];
+    LIQUID_VLA(float, c, 12);
     float c_test[12] = {39916800,
                         120543840,
                         150917976,
@@ -212,9 +212,9 @@ void autotest_polycf_expandroots_4()
 {
     // expand complex roots on conjugate pair
     float theta = 1.7f;
-    float complex a[2] = { -cexpf(_Complex_I*theta), -cexpf(-_Complex_I*theta) };
-    float complex c[3];
-    float complex c_test[3] = { 1, 2*cosf(theta), 1 };
+    liquid_float_complex a[2] = { -cexpf(_Complex_I*theta), -cexpf(-_Complex_I*theta) };
+    LIQUID_VLA(liquid_float_complex, c, 3);
+    liquid_float_complex c_test[3] = { 1, 2*cosf(theta), 1 };
     float tol = 1e-3f;
 
     polycf_expandroots(a,2,c);
@@ -246,7 +246,7 @@ void autotest_polyf_expandroots2_3()
     unsigned int n=3;
     float a[3] = {  2,  3, -1 };
     float b[3] = {  5, -2, -3 };
-    float c[4];
+    LIQUID_VLA(float, c, 4);
     float c_test[4] = { -6, 29, -23, -30 };
     float tol = 1e-3f;
 
@@ -274,7 +274,7 @@ void autotest_polyf_mul_2_3()
 {
     float a[3] = {  2, -4,  3 };
     float b[4] = { -9,  3, -2,  5};
-    float c[6];
+    LIQUID_VLA(float, c, 6);
     float c_test[6] = { -18, 42, -43, 27, -26, 15 };
     float tol = 1e-3f;
 
@@ -302,7 +302,7 @@ void autotest_polyf_mul_2_3()
 void autotest_poly_expandbinomial_n6()
 {
     unsigned int n=6;
-    float c[7];
+    LIQUID_VLA(float, c, 7);
     float c_test[7] = {1, 6, 15, 20, 15, 6, 1};
 
     polyf_expandbinomial(n,c);
@@ -327,7 +327,7 @@ void autotest_poly_binomial_expand_pm_m6_k1()
     unsigned int m=5;
     unsigned int k=1;
     unsigned int n = m+k;
-    float c[7];
+    LIQUID_VLA(float, c, 7);
     float c_test[7] = {1,  4,  5,  0, -5, -4, -1};
 
     polyf_expandbinomial_pm(m,k,c);
@@ -352,7 +352,7 @@ void autotest_poly_expandbinomial_pm_m5_k2()
     unsigned int m=5;
     unsigned int k=2;
     unsigned int n = m+k;
-    float c[8];
+    LIQUID_VLA(float, c, 8);
     float c_test[8] = {  1.0f,  3.0f,  1.0f, -5.0f,
                         -5.0f,  1.0f,  3.0f,  1.0f};
 

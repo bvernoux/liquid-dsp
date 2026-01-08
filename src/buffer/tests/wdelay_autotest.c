@@ -69,7 +69,7 @@ void autotest_wdelayf()
 
     float x2[10]     = {1, 1, 1, 1, 1, 1, 1, 2, 3, 4};
     float y2_test[10]= {8, 9, 2, 2, 2, 1, 1, 1, 1, 1};
-    float y2[10];
+    LIQUID_VLA(float, y2, 10);
 
     for (i=0; i<10; i++) {
         wdelayf_push(w,  x2[i]);
@@ -95,7 +95,7 @@ void autotest_wdelay_copy()
     // write some values
     unsigned int i;
     for (i=0; i<delay; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         wdelaycf_push(q0, v);
     }
 
@@ -104,14 +104,14 @@ void autotest_wdelay_copy()
 
     // write a few more values
     for (i=0; i<64; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         wdelaycf_push(q0, v);
         wdelaycf_push(q1, v);
 
-        float complex y0, y1;
+        liquid_float_complex y0, y1;
         wdelaycf_read(q0, &y0);
         wdelaycf_read(q1, &y1);
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy objects

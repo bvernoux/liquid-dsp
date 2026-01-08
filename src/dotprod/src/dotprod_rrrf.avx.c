@@ -30,6 +30,7 @@
 #include <assert.h>
 #include <immintrin.h>
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 #define DEBUG_DOTPROD_RRRF_AVX     0
 
@@ -226,7 +227,7 @@ int dotprod_rrrf_execute_avx(dotprod_rrrf _q,
     sum = _mm256_hadd_ps(sum, z);
 
     // aligned output array
-    float w[8] __attribute__((aligned(32)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 8, 32);
 
     // unload packed array
     _mm256_store_ps(w, sum);
@@ -288,7 +289,7 @@ int dotprod_rrrf_execute_avxu(dotprod_rrrf _q,
     sum = _mm256_hadd_ps(sum, z);
 
     // aligned output array
-    float w[8] __attribute__((aligned(32)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 8, 32);
 
     // unload packed array
     _mm256_store_ps(w, sum);

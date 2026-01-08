@@ -46,17 +46,17 @@ void iirfilt_rrrf_test(float *      _b,
 void iirfilt_crcf_test(float *         _b,
                        float *         _a,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len);
 
-void iirfilt_cccf_test(float complex * _b,
-                       float complex * _a,
+void iirfilt_cccf_test(liquid_float_complex * _b,
+                       liquid_float_complex * _a,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len);
 
 // 
@@ -82,34 +82,34 @@ extern float         iirfilt_rrrf_data_h7x64_y[];
 // crcf
 extern float         iirfilt_crcf_data_h3x64_b[];
 extern float         iirfilt_crcf_data_h3x64_a[];
-extern float complex iirfilt_crcf_data_h3x64_x[];
-extern float complex iirfilt_crcf_data_h3x64_y[];
+extern liquid_float_complex iirfilt_crcf_data_h3x64_x[];
+extern liquid_float_complex iirfilt_crcf_data_h3x64_y[];
 
 extern float         iirfilt_crcf_data_h5x64_b[];
 extern float         iirfilt_crcf_data_h5x64_a[];
-extern float complex iirfilt_crcf_data_h5x64_x[];
-extern float complex iirfilt_crcf_data_h5x64_y[];
+extern liquid_float_complex iirfilt_crcf_data_h5x64_x[];
+extern liquid_float_complex iirfilt_crcf_data_h5x64_y[];
 
 extern float         iirfilt_crcf_data_h7x64_b[];
 extern float         iirfilt_crcf_data_h7x64_a[];
-extern float complex iirfilt_crcf_data_h7x64_x[];
-extern float complex iirfilt_crcf_data_h7x64_y[];
+extern liquid_float_complex iirfilt_crcf_data_h7x64_x[];
+extern liquid_float_complex iirfilt_crcf_data_h7x64_y[];
 
 // cccf
-extern float complex iirfilt_cccf_data_h3x64_b[];
-extern float complex iirfilt_cccf_data_h3x64_a[];
-extern float complex iirfilt_cccf_data_h3x64_x[];
-extern float complex iirfilt_cccf_data_h3x64_y[];
+extern liquid_float_complex iirfilt_cccf_data_h3x64_b[];
+extern liquid_float_complex iirfilt_cccf_data_h3x64_a[];
+extern liquid_float_complex iirfilt_cccf_data_h3x64_x[];
+extern liquid_float_complex iirfilt_cccf_data_h3x64_y[];
 
-extern float complex iirfilt_cccf_data_h5x64_b[];
-extern float complex iirfilt_cccf_data_h5x64_a[];
-extern float complex iirfilt_cccf_data_h5x64_x[];
-extern float complex iirfilt_cccf_data_h5x64_y[];
+extern liquid_float_complex iirfilt_cccf_data_h5x64_b[];
+extern liquid_float_complex iirfilt_cccf_data_h5x64_a[];
+extern liquid_float_complex iirfilt_cccf_data_h5x64_x[];
+extern liquid_float_complex iirfilt_cccf_data_h5x64_y[];
 
-extern float complex iirfilt_cccf_data_h7x64_b[];
-extern float complex iirfilt_cccf_data_h7x64_a[];
-extern float complex iirfilt_cccf_data_h7x64_x[];
-extern float complex iirfilt_cccf_data_h7x64_y[];
+extern liquid_float_complex iirfilt_cccf_data_h7x64_b[];
+extern liquid_float_complex iirfilt_cccf_data_h7x64_a[];
+extern liquid_float_complex iirfilt_cccf_data_h7x64_x[];
+extern liquid_float_complex iirfilt_cccf_data_h7x64_y[];
 
 #endif // __LIQUID_IIRFILT_H__
 

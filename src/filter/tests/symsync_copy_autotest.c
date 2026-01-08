@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // test copying object
 void autotest_symsync_copy()
@@ -35,9 +36,9 @@ void autotest_symsync_copy()
     // NOTE: we don't care that the input is noise; just that both objects
     //       produce the same output
     unsigned int i, nw_0, nw_1, buf_len = 640;
-    float complex buf  [buf_len];
-    float complex buf_0[buf_len];
-    float complex buf_1[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_0, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_1, buf_len);
     for (i=0; i<buf_len; i++)
         buf[i] = randnf() + _Complex_I*randnf();
 
@@ -57,7 +58,7 @@ void autotest_symsync_copy()
     CONTEND_EQUALITY(nw_0, nw_1);
 
     // check output sample values
-    CONTEND_SAME_DATA(buf_0, buf_1, nw_0*sizeof(float complex));
+    CONTEND_SAME_DATA(buf_0, buf_1, nw_0*sizeof(liquid_float_complex));
 
     // check other internal properties
     CONTEND_EQUALITY(symsync_crcf_get_tau(q0),symsync_crcf_get_tau(q1));

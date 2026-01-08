@@ -21,7 +21,9 @@
  */
 
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include "autotest/autotest.h"
 #include "liquid.h"
 
@@ -35,13 +37,13 @@ void nco_crcf_spectrum_test(int _id, int _type, float _freq)
     unsigned int nfft = 9600;
 
     // create object and initialize
-    nco_crcf nco = nco_crcf_create(_type);
+    nco_crcf nco = nco_crcf_create((liquid_ncotype)_type);
     nco_crcf_set_frequency(nco, 2*M_PI*_freq);
 
     // sample buffer
     unsigned int  buf_len = 3*nfft;
-    float complex buf_0[buf_len];
-    float complex buf_1[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf_0, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_1, buf_len);
     unsigned int i;
     for (i=0; i<buf_len; i++)
         buf_0[i] = 1.0f / sqrtf((float)nfft);
@@ -67,11 +69,11 @@ void nco_crcf_spectrum_test(int _id, int _type, float _freq)
 
     // verify results: full spectrum
     autotest_psd_s regions[] = {
-        {.fmin=-0.50f,      .fmax=_freq-0.002,.pmin=  0, .pmax=-60, .test_lo=0, .test_hi=1},
-        {.fmin=_freq-0.002, .fmax=_freq+0.002,.pmin=  0, .pmax=  0, .test_lo=0, .test_hi=1},
-        {.fmin=_freq+0.002, .fmax=0.5,        .pmin=  0, .pmax=-60, .test_lo=0, .test_hi=1},
+        {.fmin=-0.50f,      .fmax=_freq-0.002f,.pmin=  0.0f, .pmax=-60.0f, .test_lo=0, .test_hi=1},
+        {.fmin=_freq-0.002f, .fmax=_freq+0.002f,.pmin=  0.0f, .pmax=  0.0f, .test_lo=0, .test_hi=1},
+        {.fmin=_freq+0.002f, .fmax=0.5f,        .pmin=  0.0f, .pmax=-60.0f, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/nco_crcf_spectrum_%s_f%.2d.m", _type==LIQUID_NCO ? "nco" : "vco", _id);
     liquid_autotest_validate_psd_spgramcf(psd, regions, 3,
         liquid_autotest_verbose ? filename : NULL);

@@ -25,14 +25,14 @@
 
 void autotest_fft_shift_4()
 {
-    float complex x[] = {
+    liquid_float_complex x[] = {
         0 + 0*_Complex_I,
         1 + 1*_Complex_I,
         2 + 2*_Complex_I,
         3 + 3*_Complex_I
     };
 
-    float complex test[] = {
+    liquid_float_complex test[] = {
         2 + 2*_Complex_I,
         3 + 3*_Complex_I,
         0 + 0*_Complex_I,
@@ -41,12 +41,12 @@ void autotest_fft_shift_4()
 
     fft_shift(x,4);
 
-    CONTEND_SAME_DATA(x,test,4*sizeof(float complex));
+    CONTEND_SAME_DATA(x,test,4*sizeof(liquid_float_complex));
 }
 
 void autotest_fft_shift_8()
 {
-    float complex x[] = {
+    liquid_float_complex x[] = {
         0 + 0*_Complex_I,
         1 + 1*_Complex_I,
         2 + 2*_Complex_I,
@@ -57,7 +57,7 @@ void autotest_fft_shift_8()
         7 + 7*_Complex_I
     };
 
-    float complex test[] = {
+    liquid_float_complex test[] = {
         4 + 4*_Complex_I,
         5 + 5*_Complex_I,
         6 + 6*_Complex_I,
@@ -70,6 +70,6 @@ void autotest_fft_shift_8()
 
     fft_shift(x,8);
 
-    CONTEND_SAME_DATA(x,test,8*sizeof(float complex));
+    CONTEND_SAME_DATA(x,test,8*sizeof(liquid_float_complex));
 }
 

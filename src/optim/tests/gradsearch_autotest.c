@@ -41,7 +41,7 @@ void autotest_gradsearch_rosenbrock()
     unsigned int num_iterations = 4000; // number of iterations to run
 
     // initialize vector for optimization
-    float v_opt[num_parameters];
+    LIQUID_VLA(float, v_opt, num_parameters);
     unsigned int i;
     for (i=0; i<num_parameters; i++)
         v_opt[i] = 0.0f;
@@ -119,7 +119,7 @@ void autotest_gradsearch_maxutility()
     unsigned int num_iterations = 4000; // number of iterations to run
 
     // initialize vector for optimization
-    float v_opt[num_parameters];
+    LIQUID_VLA(float, v_opt, num_parameters);
     unsigned int i;
     for (i=0; i<num_parameters; i++)
         v_opt[i] = 0.0f;

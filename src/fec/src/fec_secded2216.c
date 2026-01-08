@@ -258,7 +258,7 @@ int fec_secded2216_encode(fec             _q,
         unsigned char m[2] = {_msg_dec[i], 0x00};
 
         // one 22-bit symbol (encoded)
-        unsigned char v[3];
+        LIQUID_VLA(unsigned char, v, 3);
 
         // encode
         fec_secded2216_encode_symbol(m, v);
@@ -311,7 +311,7 @@ int fec_secded2216_decode(fec             _q,
         unsigned char v[3] = {_msg_enc[j+0], _msg_enc[j+1], 0x00};
 
         // one 16-bit symbol (decoded)
-        unsigned char m_hat[2];
+        LIQUID_VLA(unsigned char, m_hat, 2);
 
         // decode symbol
         fec_secded2216_decode_symbol(v, m_hat);

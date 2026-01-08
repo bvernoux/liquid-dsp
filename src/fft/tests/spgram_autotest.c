@@ -56,7 +56,7 @@ void testbench_spgramcf_noise(unsigned int _nfft,
     CONTEND_EQUALITY(spgramcf_get_num_samples_total(q), num_samples);
 
     // compute power spectral density output
-    float psd[_nfft];
+    LIQUID_VLA(float, psd, _nfft);
     spgramcf_get_psd(q, psd);
 
     // verify result
@@ -111,7 +111,7 @@ void testbench_spgramcf_signal(unsigned int _nfft, int _wtype, float _fc, float 
 
     // generate samples and push through spgram object
     unsigned int i, buf_len = 256, num_samples = 0;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     while (num_samples < 2000*_nfft) {
         // generate block of samples
         symstreamrcf_write_samples(gen, buf, buf_len);
@@ -127,7 +127,7 @@ void testbench_spgramcf_signal(unsigned int _nfft, int _wtype, float _fc, float 
     }
 
     // verify result
-    float psd[_nfft];
+    LIQUID_VLA(float, psd, _nfft);
     spgramcf_get_psd(q, psd);
     float sn  = 10*log10f(powf(10,(_SNRdB+n0)/10.0f) + powf(10.0f,n0/10.0f));// signal + noise
     autotest_psd_s regions[] = {
@@ -135,7 +135,7 @@ void testbench_spgramcf_signal(unsigned int _nfft, int _wtype, float _fc, float 
         {.fmin=_fc-0.4f*bw, .fmax=_fc+0.4f*bw, .pmin=sn-tol, .pmax=sn+tol, .test_lo=1, .test_hi=1},
         {.fmin=_fc+0.6f*bw, .fmax=+0.5f,       .pmin=n0-tol, .pmax=n0+tol, .test_lo=1, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/spgramcf_signal_%s_n%u_f%c%.0f_s%c%.0f.m",
         liquid_window_str[_wtype][0], _nfft,
         _fc < 0 ? 'm' : 'p', fabsf(_fc*1000),
@@ -193,7 +193,7 @@ void autotest_spgramcf_counters()
 
     // clear object and run in blocks
     spgramcf_clear(q);
-    float complex block[block_len];
+    LIQUID_VLA(liquid_float_complex, block, block_len);
     for (i=0; i<block_len; i++)
         block[i] = randnf() + _Complex_I*randnf();
     for (i=0; i<num_blocks; i++)
@@ -254,12 +254,12 @@ void autotest_spgramcf_standalone()
     float        noise_floor = -20.0f;
     float        nstd        = powf(10.0f,noise_floor/20.0f); // noise std. dev.
 
-    float complex * buf = (float complex*)malloc(num_samples*sizeof(float complex));
+    liquid_float_complex * buf = (liquid_float_complex*)malloc(num_samples*sizeof(liquid_float_complex));
     unsigned int i;
     for (i=0; i<num_samples; i++)
         buf[i] = 0.1f + nstd*(randnf()+_Complex_I*randnf())*M_SQRT1_2;
 
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_estimate_psd(nfft, buf, num_samples, psd);
 
     // check mask
@@ -285,12 +285,12 @@ void autotest_spgramcf_short()
     float        noise_floor = -20.0f;
     float        nstd        = powf(10.0f,noise_floor/20.0f); // noise std. dev.
 
-    float complex * buf = (float complex*)malloc(num_samples*sizeof(float complex));
+    liquid_float_complex * buf = (liquid_float_complex*)malloc(num_samples*sizeof(liquid_float_complex));
     unsigned int i;
     for (i=0; i<num_samples; i++)
         buf[i] = 1.0f + nstd*(randnf()+_Complex_I*randnf())*M_SQRT1_2;
 
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_estimate_psd(nfft, buf, num_samples, psd);
 
     // use a very loose upper mask as we have only computed a few hundred samples
@@ -325,21 +325,21 @@ void autotest_spgramcf_copy()
     // generate a bunch of random noise samples
     unsigned int i;
     for (i=0; i<num_samples; i++) {
-        float complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
+        liquid_float_complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
         spgramcf_push(q0, v);
     }
 
     // copy object and push same samples through both
     spgramcf q1 = spgramcf_copy(q0);
     for (i=0; i<num_samples; i++) {
-        float complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
+        liquid_float_complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
         spgramcf_push(q0, v);
         spgramcf_push(q1, v);
     }
 
     // get spectrum and compare outputs
-    float psd_0[nfft];
-    float psd_1[nfft];
+    LIQUID_VLA(float, psd_0, nfft);
+    LIQUID_VLA(float, psd_1, nfft);
     spgramcf_get_psd(q0, psd_0);
     spgramcf_get_psd(q1, psd_1);
     CONTEND_SAME_DATA(psd_0, psd_1, nfft*sizeof(float));
@@ -363,7 +363,7 @@ void autotest_spgramcf_copy()
 void autotest_spgramcf_null()
 {
     unsigned int nfft = 1200;   // transform size
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_estimate_psd(nfft, NULL, 0, psd);
 
     // value should be exactly minimum

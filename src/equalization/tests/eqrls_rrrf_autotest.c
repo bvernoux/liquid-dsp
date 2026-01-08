@@ -46,10 +46,10 @@ void autotest_eqrls_rrrf_01()
     unsigned int n=64;      // number of symbols to observe
 
     // bookkeeping variables
-    float y[n];         // received data sequence (filtered by channel)
+    LIQUID_VLA(float, y, n);         // received data sequence (filtered by channel)
     //float d_hat[n];   // recovered data sequence
-    float h[h_len];     // channel filter coefficients
-    float w[p];         // equalizer filter coefficients
+    LIQUID_VLA(float, h, h_len);     // channel filter coefficients
+    LIQUID_VLA(float, w, p);         // equalizer filter coefficients
     unsigned int i;
 
     // create equalizer
@@ -89,7 +89,7 @@ void autotest_eqrls_rrrf_copy()
 {
     // create initial object
     unsigned int i;
-    float h[9];
+    LIQUID_VLA(float, h, 9);
     for (i=0; i<9; i++)
         h[i] = randnf();
     eqrls_rrrf q0 = eqrls_rrrf_create(h, 9);

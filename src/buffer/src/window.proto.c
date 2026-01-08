@@ -46,7 +46,7 @@ WINDOW() WINDOW(_create)(unsigned int _n)
 {
     // validate input
     if (_n == 0)
-        return liquid_error_config("error: window%s_create(), window size must be greater than zero", EXTENSION);
+        return liquid_error_config_ptr(WINDOW(), "error: window%s_create(), window size must be greater than zero", EXTENSION);
 
     // create initial object
     WINDOW() q = (WINDOW()) malloc(sizeof(struct WINDOW(_s)));
@@ -112,7 +112,7 @@ WINDOW() WINDOW(_copy)(WINDOW() q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("error: window%s_copy(), window object cannot be NULL", EXTENSION);
+        return liquid_error_config_ptr(WINDOW(), "error: window%s_copy(), window object cannot be NULL", EXTENSION);
 
     // create object, copy memory, create new elements as needed
     WINDOW() q_copy = (WINDOW()) malloc(sizeof(struct WINDOW(_s)));

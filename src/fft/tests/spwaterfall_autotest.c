@@ -138,7 +138,7 @@ void autotest_spwaterfall_operation()
     CONTEND_EQUALITY(spwaterfallcf_get_num_samples_total(q), 0);
 
     // write a block of samples
-    float complex buf[12];
+    LIQUID_VLA(liquid_float_complex, buf, 12);
     unsigned int i;
     for (i=0; i<12; i++)
         buf[i] = randnf() + _Complex_I*randnf();
@@ -160,14 +160,14 @@ void autotest_spwaterfall_copy()
     unsigned int i;
     unsigned int num_samples = 17 * nfft * time;
     for (i=0; i<num_samples; i++) {
-        float complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
+        liquid_float_complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
         spwaterfallcf_push(q0, v);
     }
 
     // copy object and push same samples through both
     spwaterfallcf q1 = spwaterfallcf_copy(q0);
     for (i=0; i<num_samples; i++) {
-        float complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
+        liquid_float_complex v = 0.1f + nstd * (randnf() + _Complex_I*randnf());
         spwaterfallcf_push(q0, v);
         spwaterfallcf_push(q1, v);
     }

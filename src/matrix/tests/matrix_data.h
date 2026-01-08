@@ -86,51 +86,51 @@ extern float matrixf_data_transmul_xHx[];
 
 
 // 
-// single-precision complex floating-point data
+// single-precision liquid_float_complexing-point data
 //
 
 // add
-extern float complex matrixcf_data_add_x[];
-extern float complex matrixcf_data_add_y[];
-extern float complex matrixcf_data_add_z[];
+extern liquid_float_complex matrixcf_data_add_x[];
+extern liquid_float_complex matrixcf_data_add_y[];
+extern liquid_float_complex matrixcf_data_add_z[];
 
 // aug
-extern float complex matrixcf_data_aug_x[];
-extern float complex matrixcf_data_aug_y[];
-extern float complex matrixcf_data_aug_z[];
+extern liquid_float_complex matrixcf_data_aug_x[];
+extern liquid_float_complex matrixcf_data_aug_y[];
+extern liquid_float_complex matrixcf_data_aug_z[];
 
 // chol
-extern float complex matrixcf_data_chol_A[];
-extern float complex matrixcf_data_chol_L[];
+extern liquid_float_complex matrixcf_data_chol_A[];
+extern liquid_float_complex matrixcf_data_chol_L[];
 
 // inv
-extern float complex matrixcf_data_inv_x[];
-extern float complex matrixcf_data_inv_y[];
+extern liquid_float_complex matrixcf_data_inv_x[];
+extern liquid_float_complex matrixcf_data_inv_y[];
 
 // linsolve
-extern float complex matrixcf_data_linsolve_A[];
-extern float complex matrixcf_data_linsolve_x[];
-extern float complex matrixcf_data_linsolve_b[];
+extern liquid_float_complex matrixcf_data_linsolve_A[];
+extern liquid_float_complex matrixcf_data_linsolve_x[];
+extern liquid_float_complex matrixcf_data_linsolve_b[];
 
 // ludecomp
-extern float complex matrixcf_data_ludecomp_A[];
+extern liquid_float_complex matrixcf_data_ludecomp_A[];
 
 // mul
-extern float complex matrixcf_data_mul_x[];
-extern float complex matrixcf_data_mul_y[];
-extern float complex matrixcf_data_mul_z[];
+extern liquid_float_complex matrixcf_data_mul_x[];
+extern liquid_float_complex matrixcf_data_mul_y[];
+extern liquid_float_complex matrixcf_data_mul_z[];
 
 // qrdecomp
-extern float complex matrixcf_data_qrdecomp_A[];
-extern float complex matrixcf_data_qrdecomp_Q[];
-extern float complex matrixcf_data_qrdecomp_R[];
+extern liquid_float_complex matrixcf_data_qrdecomp_A[];
+extern liquid_float_complex matrixcf_data_qrdecomp_Q[];
+extern liquid_float_complex matrixcf_data_qrdecomp_R[];
 
 // transmul
-extern float complex matrixcf_data_transmul_x[];
-extern float complex matrixcf_data_transmul_xxT[];
-extern float complex matrixcf_data_transmul_xxH[];
-extern float complex matrixcf_data_transmul_xTx[];
-extern float complex matrixcf_data_transmul_xHx[];
+extern liquid_float_complex matrixcf_data_transmul_x[];
+extern liquid_float_complex matrixcf_data_transmul_xxT[];
+extern liquid_float_complex matrixcf_data_transmul_xxH[];
+extern liquid_float_complex matrixcf_data_transmul_xTx[];
+extern liquid_float_complex matrixcf_data_transmul_xHx[];
 
 #endif // __LIQUID_MATRIX_DATA_H__
 

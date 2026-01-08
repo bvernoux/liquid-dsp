@@ -45,7 +45,7 @@ void iirfilt_rrrf_test(float *      _b,
     iirfilt_rrrf q = iirfilt_rrrf_create(_b, _h_len, _a, _h_len);
 
     // allocate memory for output
-    float y_test[_y_len];
+    LIQUID_VLA(float, y_test, _y_len);
 
     unsigned int i;
     // compute output
@@ -70,9 +70,9 @@ void iirfilt_rrrf_test(float *      _b,
 void iirfilt_crcf_test(float *         _b,
                        float *         _a,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len)
 {
     float tol = 0.001f;
@@ -81,7 +81,7 @@ void iirfilt_crcf_test(float *         _b,
     iirfilt_crcf q = iirfilt_crcf_create(_b, _h_len, _a, _h_len);
 
     // allocate memory for output
-    float complex y_test[_y_len];
+    LIQUID_VLA(liquid_float_complex, y_test, _y_len);
 
     unsigned int i;
     // compute output
@@ -104,12 +104,12 @@ void iirfilt_crcf_test(float *         _b,
 //  _x_len  :   input array length
 //  _y      :   output array
 //  _y_len  :   output array length
-void iirfilt_cccf_test(float complex * _b,
-                       float complex * _a,
+void iirfilt_cccf_test(liquid_float_complex * _b,
+                       liquid_float_complex * _a,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len)
 {
     float tol = 0.001f;
@@ -118,7 +118,7 @@ void iirfilt_cccf_test(float complex * _b,
     iirfilt_cccf q = iirfilt_cccf_create(_b, _h_len, _a, _h_len);
 
     // allocate memory for output
-    float complex y_test[_y_len];
+    LIQUID_VLA(liquid_float_complex, y_test, _y_len);
 
     unsigned int i;
     // compute output

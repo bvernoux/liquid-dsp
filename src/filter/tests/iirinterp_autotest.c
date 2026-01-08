@@ -45,8 +45,8 @@ void test_iirinterp_crcf(const char * _method,
 
     // generate samples and push through spgram object
     unsigned int  block_size = 10;
-    float complex buf_0[block_size];         // input buffer
-    float complex buf_1[block_size*_interp]; // output buffer
+    LIQUID_VLA(liquid_float_complex, buf_0, block_size);         // input buffer
+    LIQUID_VLA(liquid_float_complex, buf_1, block_size*_interp); // output buffer
     while (spgramcf_get_num_samples_total(q) < n) {
         // generate block of samples
         symstreamrcf_write_samples(gen, buf_0, block_size);
@@ -59,14 +59,14 @@ void test_iirinterp_crcf(const char * _method,
     }
 
     // verify result
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(q, psd);
     autotest_psd_s regions[] = {
-        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
+        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0.0f,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
         {.fmin=-0.4f*bw, .fmax=+0.4f*bw, .pmin=0-tol, .pmax=  0+tol, .test_lo=1, .test_hi=1},
-        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
+        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0.0f,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/iirinterp_crcf_M%u_O%u.m", _interp, _order);
     liquid_autotest_validate_spectrum(psd, nfft, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -91,9 +91,9 @@ void autotest_iirinterp_copy()
 
     // run samples through filter
     unsigned int i;
-    float complex buf_0[3], buf_1[3];
+    liquid_float_complex buf_0[3], buf_1[3];
     for (i=0; i<20; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         iirinterp_crcf_execute(q0, v, buf_0);
     }
 
@@ -102,11 +102,11 @@ void autotest_iirinterp_copy()
 
     // run samples through both filters in parallel
     for (i=0; i<60; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         iirinterp_crcf_execute(q0, v, buf_0);
         iirinterp_crcf_execute(q1, v, buf_1);
 
-        CONTEND_SAME_DATA( buf_0, buf_1, 3*sizeof(float complex) );
+        CONTEND_SAME_DATA( buf_0, buf_1, 3*sizeof(liquid_float_complex) );
     }
 
     // destroy objects

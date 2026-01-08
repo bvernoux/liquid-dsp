@@ -45,8 +45,8 @@ void testbench_fdelay_rrrf(unsigned int _nmax,
     CONTEND_DELTA   (fdelay_rrrf_get_delay(q), _delay, 1e-6f);
 
     // generate impulse and propagate through object
-    float x[num_samples];
-    float y[num_samples];
+    LIQUID_VLA(float, x, num_samples);
+    LIQUID_VLA(float, y, num_samples);
     unsigned int i;
     // generate input
     for (i=0; i<num_samples; i++)
@@ -61,7 +61,7 @@ void testbench_fdelay_rrrf(unsigned int _nmax,
     // estimate delay; assumes input is impulse and uses phase at
     // single point of frequency estimate evaluation
     float fc = 0.1f / (float)num_samples; // sufficiently small
-    float complex v = 0.0f;
+    liquid_float_complex v = 0.0f;
     for (i=0; i<num_samples; i++)
         v += y[i] * cexpf(_Complex_I*2*M_PI*fc*i);
     float delay_est = cargf(v) / (2*M_PI*fc) - (float)_m;

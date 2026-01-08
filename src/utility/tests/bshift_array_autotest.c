@@ -49,7 +49,7 @@ void autotest_lbshift() {
     unsigned char output_test_6[4] = {0x7B, 0xD7, 0xEA, 0x80};
     unsigned char output_test_7[4] = {0xF7, 0xAF, 0xD5, 0x00};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
     
     // 
     // run tests
@@ -97,7 +97,7 @@ void autotest_rbshift() {
     unsigned char output_test_6[4] = {0x02, 0x07, 0xBD, 0x7E};
     unsigned char output_test_7[4] = {0x01, 0x03, 0xDE, 0xBF};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
     
     // 
     // run tests
@@ -145,7 +145,7 @@ void autotest_lbcircshift() {
     unsigned char output_test_6[4] = {0x7B, 0xD7, 0xEA, 0xA4};
     unsigned char output_test_7[4] = {0xF7, 0xAF, 0xD5, 0x48};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
     
     // 
     // run tests
@@ -193,7 +193,7 @@ void autotest_rbcircshift() {
     unsigned char output_test_6[4] = {0xAA, 0x47, 0xBD, 0x7E};
     unsigned char output_test_7[4] = {0x55, 0x23, 0xDE, 0xBF};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
     
     // 
     // run tests

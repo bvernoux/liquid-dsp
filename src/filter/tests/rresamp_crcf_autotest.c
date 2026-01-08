@@ -23,6 +23,7 @@
 #include <string.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // test rational-rate resampler
 void test_rresamp_crcf(const char * _method,
@@ -63,8 +64,8 @@ void test_rresamp_crcf(const char * _method,
     symstreamrcf_set_gain(gen, sqrtf(bw*r));
 
     // generate samples and push through spgram object
-    float complex buf_0[_decim]; // input buffer
-    float complex buf_1[_interp]; // output buffer
+    LIQUID_VLA(liquid_float_complex, buf_0, _decim); // input buffer
+    LIQUID_VLA(liquid_float_complex, buf_1, _interp); // output buffer
     while (spgramcf_get_num_samples_total(q) < n) {
         // generate block of samples
         symstreamrcf_write_samples(gen, buf_0, _decim);
@@ -77,14 +78,14 @@ void test_rresamp_crcf(const char * _method,
     }
 
     // verify result
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(q, psd);
     autotest_psd_s regions[] = {
-        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0,     .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0.0f,     .pmax=-_as+tol, .test_lo=0, .test_hi=1},
         {.fmin=-0.4f*bw, .fmax=+0.4f*bw, .pmin=0-tol, .pmax=  0 +tol, .test_lo=1, .test_hi=1},
-        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0,     .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0.0f,     .pmax=-_as+tol, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/rresamp_crcf_%s_P%u_Q%u.m", _method, _interp, _decim);
     liquid_autotest_validate_spectrum(psd, nfft, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -129,9 +130,9 @@ void autotest_rresamp_copy()
     symstreamrcf gen = symstreamrcf_create();
 
     // generate samples and push through resampler
-    float complex buf  [Q]; // input buffer
-    float complex buf_0[P]; // output buffer (orig)
-    float complex buf_1[P]; // output buffer (copy)
+    LIQUID_VLA(liquid_float_complex, buf, Q); // input buffer
+    LIQUID_VLA(liquid_float_complex, buf_0, P); // output buffer (orig)
+    LIQUID_VLA(liquid_float_complex, buf_1, P); // output buffer (copy)
     for (i=0; i<10; i++) {
         // generate block of samples
         symstreamrcf_write_samples(gen, buf, Q);
@@ -153,7 +154,7 @@ void autotest_rresamp_copy()
         rresamp_crcf_execute(q1, buf, buf_1);
 
         // compare output
-        CONTEND_SAME_DATA(buf_0, buf_1, P*sizeof(float complex));
+        CONTEND_SAME_DATA(buf_0, buf_1, P*sizeof(liquid_float_complex));
     }
 
     // destroy objects

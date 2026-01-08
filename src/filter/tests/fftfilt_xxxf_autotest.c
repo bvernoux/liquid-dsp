@@ -26,6 +26,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // autotest data definitions
 #include "src/filter/tests/fftfilt_autotest.h"
@@ -147,7 +148,7 @@ void autotest_fftfilt_copy()
 {
     // generate random filter coefficients
     unsigned int i, j, h_len = 31;
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     for (i=0; i<h_len; i++)
         h[i] = randnf();
 
@@ -159,7 +160,9 @@ void autotest_fftfilt_copy()
     fftfilt_crcf q0 = fftfilt_crcf_create(h, h_len, n);
 
     // compute output in blocks of size 'n'
-    float complex buf[n], buf_0[n], buf_1[n];
+    LIQUID_VLA(liquid_float_complex, buf, n);
+    LIQUID_VLA(liquid_float_complex, buf_0, n);
+    LIQUID_VLA(liquid_float_complex, buf_1, n);
     for (i=0; i<10; i++) {
         for (j=0; j<n; j++)
             buf[j] = randnf() + _Complex_I*randnf();
@@ -176,7 +179,7 @@ void autotest_fftfilt_copy()
         fftfilt_crcf_execute(q0, buf, buf_0);
         fftfilt_crcf_execute(q1, buf, buf_1);
 
-        CONTEND_SAME_DATA( buf_0, buf_1, n*sizeof(float complex));
+        CONTEND_SAME_DATA( buf_0, buf_1, n*sizeof(liquid_float_complex));
     }
     
     // destroy objects

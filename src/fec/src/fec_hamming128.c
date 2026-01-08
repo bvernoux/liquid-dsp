@@ -301,7 +301,7 @@ int fec_hamming128_decode_soft(fec             _q,
     unsigned int k=0;       // array bit index
     unsigned int r = _dec_msg_len % 2;
 
-    // compute encoded message length
+    // compute encoded message length for assert validation
     unsigned int enc_msg_len = (3*_dec_msg_len)/2 + r;
 
     unsigned char s;    // decoded 8-bit symbol

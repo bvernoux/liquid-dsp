@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 void autotest_firdecim_config()
 {
@@ -36,7 +37,7 @@ void autotest_firdecim_config()
     unsigned int M     =  4;
     unsigned int m     = 12;
     unsigned int h_len =  2*M*m+1;
-    float        h[h_len];
+    LIQUID_VLA(float, h, h_len);
     int          wtype = LIQUID_WINDOW_HAMMING;
     liquid_firdes_windowf(wtype, h_len, 0.2f, 0, h);
 
@@ -73,9 +74,9 @@ void autotest_firdecim_block()
     float        beta = 0.3f;
 
     unsigned int num_blocks = 10 + m;
-    float complex buf_0[M*num_blocks]; // input
-    float complex buf_1[  num_blocks]; // output (regular)
-    float complex buf_2[  num_blocks]; // output (block)
+    LIQUID_VLA(liquid_float_complex, buf_0, M*num_blocks); // input
+    LIQUID_VLA(liquid_float_complex, buf_1,   num_blocks); // output (regular)
+    LIQUID_VLA(liquid_float_complex, buf_2,   num_blocks); // output (block)
 
     firdecim_crcf decim = firdecim_crcf_create_prototype(
             LIQUID_FIRFILT_ARKAISER, M, m, beta, 0);
@@ -114,9 +115,9 @@ void autotest_firdecim_copy()
     firdecim_crcf_set_scale(q0, 0.12345f);
 
     unsigned int num_blocks = 10 + m;
-    float complex buf  [M*num_blocks]; // input
-    float complex buf_0[  num_blocks]; // output (base)
-    float complex buf_1[  num_blocks]; // output (copy)
+    LIQUID_VLA(liquid_float_complex, buf, M*num_blocks); // input
+    LIQUID_VLA(liquid_float_complex, buf_0,   num_blocks); // output (base)
+    LIQUID_VLA(liquid_float_complex, buf_1,   num_blocks); // output (copy)
 
     // create random-ish input (does not really matter what the input is
     // so long as the outputs match, but systematic for repeatability)

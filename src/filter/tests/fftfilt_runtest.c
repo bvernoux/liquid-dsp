@@ -46,7 +46,7 @@ void fftfilt_rrrf_test(float *      _h,
     unsigned int n = 1 << liquid_nextpow2(_h_len-1);
 
     // determine number of blocks
-    div_t d = div(_x_len, n);
+    div_t d = div((int)_x_len, (int)n);
     unsigned int num_blocks = d.quot + (d.rem ? 1 : 0);
     if (liquid_autotest_verbose) {
         printf("fftfilt_rrrf_test(), h_len: %3u, x_len: %3u (%3u blocks @ %3u samples, %3u remaining)\n",
@@ -57,7 +57,7 @@ void fftfilt_rrrf_test(float *      _h,
     fftfilt_rrrf q = fftfilt_rrrf_create(_h, _h_len, n);
 
     // allocate memory for output
-    float y_test[n*num_blocks];
+    LIQUID_VLA(float, y_test, n*num_blocks);
 
     unsigned int i;
 
@@ -82,9 +82,9 @@ void fftfilt_rrrf_test(float *      _h,
 //  _y_len  :   output array length
 void fftfilt_crcf_test(float *         _h,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len)
 {
     float tol = 0.001f;
@@ -94,7 +94,7 @@ void fftfilt_crcf_test(float *         _h,
     unsigned int n = 1 << liquid_nextpow2(_h_len-1);
 
     // determine number of blocks
-    div_t d = div(_x_len, n);
+    div_t d = div((int)_x_len, (int)n);
     unsigned int num_blocks = d.quot + (d.rem ? 1 : 0);
     if (liquid_autotest_verbose) {
         printf("fftfilt_crcf_test(), h_len: %3u, x_len: %3u (%3u blocks @ %3u samples, %3u remaining)\n",
@@ -105,7 +105,7 @@ void fftfilt_crcf_test(float *         _h,
     fftfilt_crcf q = fftfilt_crcf_create(_h, _h_len, n);
 
     // allocate memory for output
-    float complex y_test[n*num_blocks];
+    LIQUID_VLA(liquid_float_complex, y_test, n*num_blocks);
 
     unsigned int i;
 
@@ -130,11 +130,11 @@ void fftfilt_crcf_test(float *         _h,
 //  _x_len  :   input array length
 //  _y      :   output array
 //  _y_len  :   output array length
-void fftfilt_cccf_test(float complex * _h,
+void fftfilt_cccf_test(liquid_float_complex * _h,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len)
 {
     float tol = 0.001f;
@@ -144,7 +144,7 @@ void fftfilt_cccf_test(float complex * _h,
     unsigned int n = 1 << liquid_nextpow2(_h_len-1);
 
     // determine number of blocks
-    div_t d = div(_x_len, n);
+    div_t d = div((int)_x_len, (int)n);
     unsigned int num_blocks = d.quot + (d.rem ? 1 : 0);
     if (liquid_autotest_verbose) {
         printf("fftfilt_cccf_test(), h_len: %3u, x_len: %3u (%3u blocks @ %3u samples, %3u remaining)\n",
@@ -155,7 +155,7 @@ void fftfilt_cccf_test(float complex * _h,
     fftfilt_cccf q = fftfilt_cccf_create(_h, _h_len, n);
 
     // allocate memory for output
-    float complex y_test[n*num_blocks];
+    LIQUID_VLA(liquid_float_complex, y_test, n*num_blocks);
 
     unsigned int i;
 

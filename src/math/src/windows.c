@@ -88,7 +88,7 @@ liquid_window_type liquid_getopt_str2window(const char * _str)
     unsigned int i;
     for (i=0; i<LIQUID_WINDOW_NUM_FUNCTIONS; i++) {
         if (strcmp(_str,liquid_window_str[i][0])==0) {
-            return i;
+            return (liquid_window_type)i;
         }
     }
 
@@ -182,7 +182,7 @@ int liquid_kbd_window(unsigned int _i,
 
     // generate regular Kaiser window, length M+1
     unsigned int i;
-    float w_kaiser[M+1];
+    LIQUID_VLA(float, w_kaiser, M+1);
     for (i=0; i<=M; i++)
         w_kaiser[i] = liquid_kaiser(i,M+1,_beta);
 

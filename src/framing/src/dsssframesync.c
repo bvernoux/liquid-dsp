@@ -25,7 +25,9 @@
 //
 
 #include <assert.h>
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,13 +35,13 @@
 
 #include "liquid.internal.h"
 
-int dsssframesync_execute_seekpn    (dsssframesync _q, float complex _x);
-int dsssframesync_step              (dsssframesync _q, float complex _x, float complex * _y);
-int dsssframesync_execute_rxpreamble(dsssframesync _q, float complex _x);
+int dsssframesync_execute_seekpn    (dsssframesync _q, liquid_float_complex _x);
+int dsssframesync_step              (dsssframesync _q, liquid_float_complex _x, liquid_float_complex * _y);
+int dsssframesync_execute_rxpreamble(dsssframesync _q, liquid_float_complex _x);
 int dsssframesync_decode_header     (dsssframesync _q);
 int dsssframesync_decode_payload    (dsssframesync _q);
-int dsssframesync_execute_rxheader  (dsssframesync _q, float complex _x);
-int dsssframesync_execute_rxpayload (dsssframesync _q, float complex _x);
+int dsssframesync_execute_rxheader  (dsssframesync _q, liquid_float_complex _x);
+int dsssframesync_execute_rxpayload (dsssframesync _q, liquid_float_complex _x);
 int dsssframesync_configure_payload (dsssframesync _q);
 static dsssframegenprops_s dsssframesyncprops_header_default = {
     DSSSFRAME_H_CRC,
@@ -76,14 +78,14 @@ struct dsssframesync_s {
     int                 mf_counter;
     unsigned int        pfb_index;
 
-    float complex *     preamble_pn;
-    float complex *     preamble_rx;
+    liquid_float_complex *     preamble_pn;
+    liquid_float_complex *     preamble_rx;
     synth_crcf          header_synth;
     synth_crcf          payload_synth;
 
     int                 header_soft;
     flexframegenprops_s header_props;
-    float complex *     header_spread;
+    liquid_float_complex *     header_spread;
     unsigned int        header_spread_len;
     qpacketmodem        header_decoder;
     unsigned int        header_user_len;
@@ -92,7 +94,7 @@ struct dsssframesync_s {
     int                 header_valid;
 
     int                 payload_soft;
-    float complex *     payload_spread;
+    liquid_float_complex *     payload_spread;
     unsigned int        payload_spread_len;
     qpacketmodem        payload_decoder;
     unsigned int        payload_dec_len;
@@ -115,8 +117,8 @@ dsssframesync dsssframesync_create(framesync_callback _callback, void * _userdat
     q->beta = 0.3f;
 
     unsigned int i;
-    q->preamble_pn = (float complex *)calloc(64, sizeof(float complex));
-    q->preamble_rx = (float complex *)calloc(64, sizeof(float complex));
+    q->preamble_pn = (liquid_float_complex *)calloc(64, sizeof(liquid_float_complex));
+    q->preamble_rx = (liquid_float_complex *)calloc(64, sizeof(liquid_float_complex));
     msequence ms   = msequence_create(7, 0x0089, 1);
     for (i = 0; i < 64; i++) {
         q->preamble_pn[i] = (msequence_advance(ms) ? M_SQRT1_2 : -M_SQRT1_2);
@@ -124,7 +126,7 @@ dsssframesync dsssframesync_create(framesync_callback _callback, void * _userdat
     }
     msequence_destroy(ms);
 
-    float complex * pn = (float complex *)calloc(64, sizeof(float complex));
+    liquid_float_complex * pn = (liquid_float_complex *)calloc(64, sizeof(liquid_float_complex));
     ms                        = msequence_create(7, 0x00cb, 0x53);
     for (i = 0; i < 64; i++) {
         pn[i] = (msequence_advance(ms) ? M_SQRT1_2 : -M_SQRT1_2);
@@ -155,7 +157,7 @@ dsssframesync dsssframesync_create(framesync_callback _callback, void * _userdat
     q->payload_decoder    = qpacketmodem_create();
     q->payload_spread_len = 64;
     q->payload_spread
-        = (float complex *)malloc(q->payload_spread_len * sizeof(float complex));
+        = (liquid_float_complex *)malloc(q->payload_spread_len * sizeof(liquid_float_complex));
 
     dsssframesync_reset_framedatastats(q);
     dsssframesync_reset(q);
@@ -224,14 +226,14 @@ int dsssframesync_set_header_len(dsssframesync _q, unsigned int _len)
         = (unsigned char *)realloc(_q->header_dec, _q->header_dec_len * sizeof(unsigned char));
     qpacketmodem_configure(_q->header_decoder,
                            _q->header_dec_len,
-                           _q->header_props.check,
-                           _q->header_props.fec0,
-                           _q->header_props.fec1,
+                           (crc_scheme)_q->header_props.check,
+                           (fec_scheme)_q->header_props.fec0,
+                           (fec_scheme)_q->header_props.fec1,
                            LIQUID_MODEM_BPSK);
 
     _q->header_spread_len = synth_crcf_get_length(_q->header_synth);
-    _q->header_spread     = (float complex *)realloc(
-        _q->header_spread, _q->header_spread_len * sizeof(float complex));
+    _q->header_spread     = (liquid_float_complex *)realloc(
+        _q->header_spread, _q->header_spread_len * sizeof(liquid_float_complex));
     return LIQUID_OK;
 }
 
@@ -264,7 +266,7 @@ int dsssframesync_set_header_props(dsssframesync _q, dsssframegenprops_s * _prop
     return dsssframesync_set_header_len(_q, _q->header_user_len);
 }
 
-int dsssframesync_execute(dsssframesync _q, float complex * _x, unsigned int _n)
+int dsssframesync_execute(dsssframesync _q, liquid_float_complex * _x, unsigned int _n)
 {
     unsigned int i;
     for (i = 0; i < _n; i++) {
@@ -296,10 +298,10 @@ int dsssframesync_execute(dsssframesync _q, float complex * _x, unsigned int _n)
 //  _q      :   frame synchronizer object
 //  _x      :   input sample
 //  _sym    :   demodulated symbol
-int dsssframesync_execute_seekpn(dsssframesync _q, float complex _x)
+int dsssframesync_execute_seekpn(dsssframesync _q, liquid_float_complex _x)
 {
     // push through pre-demod synchronizer
-    float complex * v = qdetector_cccf_execute(_q->detector, _x);
+    liquid_float_complex * v = (liquid_float_complex *)qdetector_cccf_execute(_q->detector, _x);
 
     // check if frame has been detected
     if (v == NULL)
@@ -335,10 +337,10 @@ int dsssframesync_execute_seekpn(dsssframesync _q, float complex _x)
     return dsssframesync_execute(_q, v, buf_len);
 }
 
-int dsssframesync_step(dsssframesync _q, float complex _x, float complex * _y)
+int dsssframesync_step(dsssframesync _q, liquid_float_complex _x, liquid_float_complex * _y)
 {
     // mix sample down
-    float complex v;
+    liquid_float_complex v;
     nco_crcf_mix_down(_q->mixer, _x, &v);
     nco_crcf_step(_q->mixer);
 
@@ -363,10 +365,10 @@ int dsssframesync_step(dsssframesync _q, float complex _x, float complex * _y)
     return sample_available;
 }
 
-int dsssframesync_execute_rxpreamble(dsssframesync _q, float complex _x)
+int dsssframesync_execute_rxpreamble(dsssframesync _q, liquid_float_complex _x)
 {
     // step synchronizer
-    float complex mf_out           = 0.0f;
+    liquid_float_complex mf_out           = 0.0f;
     int           sample_available = dsssframesync_step(_q, _x, &mf_out);
 
     // compute output if timeout
@@ -390,9 +392,9 @@ int dsssframesync_execute_rxpreamble(dsssframesync _q, float complex _x)
     return LIQUID_OK;
 }
 
-int dsssframesync_execute_rxheader(dsssframesync _q, float complex _x)
+int dsssframesync_execute_rxheader(dsssframesync _q, liquid_float_complex _x)
 {
-    float complex mf_out           = 0.f;
+    liquid_float_complex mf_out           = 0.f;
     int           sample_available = dsssframesync_step(_q, _x, &mf_out);
 
     if (!sample_available)
@@ -438,7 +440,7 @@ int dsssframesync_execute_rxheader(dsssframesync _q, float complex _x)
 
 int dsssframesync_decode_header(dsssframesync _q)
 {
-    float complex prev_corr, corr, next_corr;
+    liquid_float_complex prev_corr, corr, next_corr;
     nco_crcf_mix_block_down(
         _q->pll, _q->header_spread, _q->header_spread, synth_crcf_get_length(_q->header_synth));
     synth_crcf_despread_triple(_q->header_synth, _q->header_spread, &prev_corr, &corr, &next_corr);
@@ -493,15 +495,15 @@ int dsssframesync_configure_payload(dsssframesync _q)
     _q->payload_dec
         = (unsigned char *)realloc(_q->payload_dec, (_q->payload_dec_len) * sizeof(unsigned char));
     qpacketmodem_configure(
-        _q->payload_decoder, _q->payload_dec_len, check, fec0, fec1, LIQUID_MODEM_BPSK);
+        _q->payload_decoder, _q->payload_dec_len, (crc_scheme)check, (fec_scheme)fec0, (fec_scheme)fec1, LIQUID_MODEM_BPSK);
 
     synth_crcf_set_frequency(_q->payload_synth, synth_crcf_get_frequency(_q->header_synth));
     return LIQUID_OK;
 }
 
-int dsssframesync_execute_rxpayload(dsssframesync _q, float complex _x)
+int dsssframesync_execute_rxpayload(dsssframesync _q, liquid_float_complex _x)
 {
-    float complex mf_out           = 0.f;
+    liquid_float_complex mf_out           = 0.f;
     int                  sample_available = dsssframesync_step(_q, _x, &mf_out);
 
     if (!sample_available)
@@ -537,7 +539,7 @@ int dsssframesync_execute_rxpayload(dsssframesync _q, float complex _x)
 
 int dsssframesync_decode_payload(dsssframesync _q)
 {
-    float complex prev_corr, corr, next_corr;
+    liquid_float_complex prev_corr, corr, next_corr;
     nco_crcf_mix_block_down(
         _q->pll, _q->payload_spread, _q->payload_spread, synth_crcf_get_length(_q->payload_synth));
     synth_crcf_despread_triple(

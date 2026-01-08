@@ -174,7 +174,7 @@ int fec_hamming74_decode_soft(fec             _q,
     unsigned int i;
     unsigned int k=0;       // array bit index
 
-    // compute encoded message length
+    // compute encoded message length for assert validation
     unsigned int enc_msg_len = fec_block_get_enc_msg_len(_dec_msg_len,4,7);
 
     // decoded 4-bit symbols

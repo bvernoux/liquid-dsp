@@ -31,7 +31,7 @@ void autotest_iirdecim_copy()
 
     // run samples through filter
     unsigned int i, j;
-    float complex buf[3], y0, y1;
+    liquid_float_complex buf[3], y0, y1;
     for (i=0; i<20; i++) {
         for (j=0; j<3; j++)
             buf[j] = randnf() + _Complex_I*randnf();
@@ -48,7 +48,7 @@ void autotest_iirdecim_copy()
         iirdecim_crcf_execute(q0, buf, &y0);
         iirdecim_crcf_execute(q1, buf, &y1);
 
-        CONTEND_EQUALITY( y0, y1 );
+        CONTEND_EQUALITY_COMPLEX( y0, y1 );
     }
 
     // destroy objects

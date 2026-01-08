@@ -62,8 +62,8 @@ void sumproduct_bench(struct rusage *     _start,
     unsigned int _n = 2*_m;
 
     // create arrays
-    unsigned char Gs[_m*_n]; // generator matrix [m x n]
-    unsigned char Hs[_m*_n]; // parity check matrix [m x n]
+    LIQUID_VLA(unsigned char, Gs, _m*_n); // generator matrix [m x n]
+    LIQUID_VLA(unsigned char, Hs, _m*_n); // parity check matrix [m x n]
     sumproduct_generate(_m, Gs, Hs);
 
     // generate sparse binary matrices
@@ -74,10 +74,10 @@ void sumproduct_bench(struct rusage *     _start,
     //printf("G:\n"); smatrixb_print_expanded(G);
     //printf("H:\n"); smatrixb_print_expanded(H);
 
-    unsigned char x[_m];     // original message signal
-    unsigned char c[_n];     // transmitted codeword
-    float LLR[_n];           // log-likelihood ratio
-    unsigned char c_hat[_n]; // estimated codeword
+    LIQUID_VLA(unsigned char, x, _m);     // original message signal
+    LIQUID_VLA(unsigned char, c, _n);     // transmitted codeword
+    LIQUID_VLA(float, LLR, _n);           // log-likelihood ratio
+    LIQUID_VLA(unsigned char, c_hat, _n); // estimated codeword
 
     // initialize message array
     for (i=0; i<_m; i++)
@@ -127,7 +127,7 @@ void sumproduct_generate(unsigned int    _m,
     unsigned int _n = 2*_m;
 
     // initial generator polynomial [1 x m]
-    unsigned char p[_m];
+    LIQUID_VLA(unsigned char, p, _m);
 
     // initialize generator polynomial (systematic)
     for (i=0; i<_m; i++)

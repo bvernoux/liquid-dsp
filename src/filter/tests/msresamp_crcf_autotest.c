@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // test multi-stage arbitrary resampler
 //   r  : resampling rate (output/input)
@@ -42,8 +43,8 @@ void testbench_msresamp_crcf(float r, float As)
 
     // generate samples and push through spgram object
     unsigned int  buf_len = 256;
-    float complex buf_0[buf_len]; // input buffer
-    float complex buf_1[buf_len]; // output buffer
+    LIQUID_VLA(liquid_float_complex, buf_0, buf_len); // input buffer
+    LIQUID_VLA(liquid_float_complex, buf_1, buf_len); // output buffer
     while (spgramcf_get_num_samples_total(q) < n) {
         // generate block of samples
         symstreamrcf_write_samples(gen, buf_0, buf_len);
@@ -57,14 +58,14 @@ void testbench_msresamp_crcf(float r, float As)
     }
 
     // verify result
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(q, psd);
     autotest_psd_s regions[] = {
-        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
+        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0.0f,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
         {.fmin=-0.4f*bw, .fmax=+0.4f*bw, .pmin=0-tol, .pmax= 0 +tol, .test_lo=1, .test_hi=1},
-        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
+        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0.0f,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/msresamp_crcf_r%.3u_a%.2u_autotest.m", (int)(r*1000), (int)(As));
     liquid_autotest_validate_spectrum(psd, nfft, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -98,8 +99,8 @@ void testbench_msresamp_crcf_num_output(float _rate)
     unsigned int max_input = 64*s;
     unsigned int max_output = 16 + (unsigned int)(4.0f * max_input * _rate);
     printf("max_input : %u, max_output : %u\n", max_input, max_output);
-    float complex * buf_0 = (float complex*) malloc(max_input  * sizeof(float complex));
-    float complex * buf_1 = (float complex*) malloc(max_output * sizeof(float complex));
+    liquid_float_complex * buf_0 = (liquid_float_complex*) malloc(max_input  * sizeof(liquid_float_complex));
+    liquid_float_complex * buf_1 = (liquid_float_complex*) malloc(max_output * sizeof(liquid_float_complex));
     unsigned int i;
     for (i=0; i<max_input; i++)
         buf_0[i] = 0.0f;
@@ -144,9 +145,9 @@ void autotest_msresamp_crcf_copy()
 
     // run samples through filter
     unsigned int i, nw_0, nw_1, buf_len = 640;
-    float complex buf  [buf_len]; // input buffer
-    float complex buf_0[buf_len];
-    float complex buf_1[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len); // input buffer
+    LIQUID_VLA(liquid_float_complex, buf_0, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_1, buf_len);
     for (i=0; i<buf_len; i++)
         buf[i] = randnf() + _Complex_I*randnf();
     msresamp_crcf_execute(q0, buf, buf_len, buf_0, &nw_0);
@@ -165,7 +166,7 @@ void autotest_msresamp_crcf_copy()
     CONTEND_EQUALITY(nw_0, nw_1);
 
     // check output sample values
-    CONTEND_SAME_DATA(buf_0, buf_1, nw_0*sizeof(float complex));
+    CONTEND_SAME_DATA(buf_0, buf_1, nw_0*sizeof(liquid_float_complex));
 
     // destroy objects
     msresamp_crcf_destroy(q0);

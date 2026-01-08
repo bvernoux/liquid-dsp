@@ -30,6 +30,7 @@
 #include <immintrin.h>
 
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 // sum squares, basic loop
 //  _v      :   input array [size: 1 x _n]
@@ -59,7 +60,7 @@ float liquid_sumsqf_sse(float *      _v,
     }
 
     // aligned output array
-    float w[4] __attribute__((aligned(16)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 4, 16);
 
 #if HAVE_SSE3
     // fold down into single value
@@ -121,7 +122,7 @@ float liquid_sumsqf_sseu(float *      _v,
     }
 
     // aligned output array
-    float w[4] __attribute__((aligned(16)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 4, 16);
 
 #if HAVE_SSE3
     // fold down into single value
@@ -162,7 +163,7 @@ float liquid_sumsqf(float *      _v,
 // sum squares, complex
 //  _v      :   input array [size: 1 x _n]
 //  _n      :   input length
-float liquid_sumsqcf(float complex * _v,
+float liquid_sumsqcf(liquid_float_complex * _v,
                      unsigned int    _n)
 {
     // simple method: type cast input as real pointer, run double

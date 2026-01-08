@@ -52,7 +52,7 @@ fec fec_conv_create(fec_scheme _fs)
     case LIQUID_FEC_CONV_V39:  fec_conv_init_v39(q);   break;
     case LIQUID_FEC_CONV_V615: fec_conv_init_v615(q);  break;
     default:
-        return liquid_error_config("fec_conv_create(), invalid type");
+        return liquid_error_config_ptr(fec, "fec_conv_create(), invalid type");
     }
 
     // convolutional-specific decoding
@@ -299,7 +299,7 @@ int fec_conv_init_v615(fec _q)
 
 fec fec_conv_create(fec_scheme _fs)
 {
-    return liquid_error_config("fec_conv_create(), libfec not installed");
+    return liquid_error_config_ptr(fec, "fec_conv_create(), libfec not installed");
 }
 
 int fec_conv_destroy(fec _q)

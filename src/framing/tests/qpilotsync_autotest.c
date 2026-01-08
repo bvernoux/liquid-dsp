@@ -25,6 +25,7 @@
 #include <math.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 #define DEBUG_QPILOTSYNC_AUTOTEST 1
 
@@ -50,12 +51,12 @@ void qpilotsync_test(modulation_scheme _ms,
     CONTEND_EQUALITY(frame_len, qpilotsync_get_frame_len(ps));
 
     // allocate arrays
-    unsigned char payload_sym_tx[_payload_len]; // transmitted payload symbols
-    float complex payload_tx    [_payload_len]; // transmitted payload samples
-    float complex frame_tx      [frame_len];    // transmitted frame samples
-    float complex frame_rx      [frame_len];    // received frame samples
-    float complex payload_rx    [_payload_len]; // received payload samples
-    unsigned char payload_sym_rx[_payload_len]; // received payload symbols
+    LIQUID_VLA(unsigned char, payload_sym_tx, _payload_len); // transmitted payload symbols
+    LIQUID_VLA(liquid_float_complex, payload_tx, _payload_len); // transmitted payload samples
+    LIQUID_VLA(liquid_float_complex, frame_tx, frame_len);    // transmitted frame samples
+    LIQUID_VLA(liquid_float_complex, frame_rx, frame_len);    // received frame samples
+    LIQUID_VLA(liquid_float_complex, payload_rx, _payload_len); // received payload samples
+    LIQUID_VLA(unsigned char, payload_sym_rx, _payload_len); // received payload symbols
 
     // create modem objects for payload
     modemcf mod = modemcf_create(_ms);
@@ -136,7 +137,7 @@ void qpilotsync_test(modulation_scheme _ms,
 #endif
 #if 0 //DEBUG_QPILOTSYNC_AUTOTEST
     // write symbols to output file for plotting
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/qpilotsync_autotest_%u_%u_debug.m", _payload_len, _pilot_spacing);
     FILE * fid = fopen(filename,"w");
     if (!fid) {

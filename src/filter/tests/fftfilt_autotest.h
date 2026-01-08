@@ -43,16 +43,16 @@ void fftfilt_rrrf_test(float *      _h,
 
 void fftfilt_crcf_test(float *         _h,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len);
 
-void fftfilt_cccf_test(float complex * _h,
+void fftfilt_cccf_test(liquid_float_complex * _h,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len);
 
 // 
@@ -78,37 +78,37 @@ extern float         fftfilt_rrrf_data_h23x256_y[];
 
 // crcf
 extern float         fftfilt_crcf_data_h4x256_h[];
-extern float complex fftfilt_crcf_data_h4x256_x[];
-extern float complex fftfilt_crcf_data_h4x256_y[];
+extern liquid_float_complex fftfilt_crcf_data_h4x256_x[];
+extern liquid_float_complex fftfilt_crcf_data_h4x256_y[];
 
 extern float         fftfilt_crcf_data_h7x256_h[];
-extern float complex fftfilt_crcf_data_h7x256_x[];
-extern float complex fftfilt_crcf_data_h7x256_y[];
+extern liquid_float_complex fftfilt_crcf_data_h7x256_x[];
+extern liquid_float_complex fftfilt_crcf_data_h7x256_y[];
 
 extern float         fftfilt_crcf_data_h13x256_h[];
-extern float complex fftfilt_crcf_data_h13x256_x[];
-extern float complex fftfilt_crcf_data_h13x256_y[];
+extern liquid_float_complex fftfilt_crcf_data_h13x256_x[];
+extern liquid_float_complex fftfilt_crcf_data_h13x256_y[];
 
 extern float         fftfilt_crcf_data_h23x256_h[];
-extern float complex fftfilt_crcf_data_h23x256_x[];
-extern float complex fftfilt_crcf_data_h23x256_y[];
+extern liquid_float_complex fftfilt_crcf_data_h23x256_x[];
+extern liquid_float_complex fftfilt_crcf_data_h23x256_y[];
 
 // cccf
-extern float complex fftfilt_cccf_data_h4x256_h[];
-extern float complex fftfilt_cccf_data_h4x256_x[];
-extern float complex fftfilt_cccf_data_h4x256_y[];
+extern liquid_float_complex fftfilt_cccf_data_h4x256_h[];
+extern liquid_float_complex fftfilt_cccf_data_h4x256_x[];
+extern liquid_float_complex fftfilt_cccf_data_h4x256_y[];
 
-extern float complex fftfilt_cccf_data_h7x256_h[];
-extern float complex fftfilt_cccf_data_h7x256_x[];
-extern float complex fftfilt_cccf_data_h7x256_y[];
+extern liquid_float_complex fftfilt_cccf_data_h7x256_h[];
+extern liquid_float_complex fftfilt_cccf_data_h7x256_x[];
+extern liquid_float_complex fftfilt_cccf_data_h7x256_y[];
 
-extern float complex fftfilt_cccf_data_h13x256_h[];
-extern float complex fftfilt_cccf_data_h13x256_x[];
-extern float complex fftfilt_cccf_data_h13x256_y[];
+extern liquid_float_complex fftfilt_cccf_data_h13x256_h[];
+extern liquid_float_complex fftfilt_cccf_data_h13x256_x[];
+extern liquid_float_complex fftfilt_cccf_data_h13x256_y[];
 
-extern float complex fftfilt_cccf_data_h23x256_h[];
-extern float complex fftfilt_cccf_data_h23x256_x[];
-extern float complex fftfilt_cccf_data_h23x256_y[];
+extern liquid_float_complex fftfilt_cccf_data_h23x256_h[];
+extern liquid_float_complex fftfilt_cccf_data_h23x256_x[];
+extern liquid_float_complex fftfilt_cccf_data_h23x256_y[];
 
 #endif // __LIQUID_FFTFILT_AUTOTEST_H__
 

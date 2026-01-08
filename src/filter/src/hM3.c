@@ -78,7 +78,7 @@ int liquid_firdes_hM3(unsigned int _k,
                                       LIQUID_FIRDESPM_EXPWEIGHT};
 
     //unsigned int i;
-    float h[n];
+    LIQUID_VLA(float, h, n);
     firdespm_run(n,num_bands,bands,des,weights,wtype,btype,h);
     // copy results
     memmove(_h, h, n*sizeof(float));

@@ -89,7 +89,7 @@ void autotest_factors()
     const unsigned int factors_280[5] = {2,2,2,5,7};
     const unsigned int factors_280_unique[3] = {2,5,7};
 
-    unsigned int factors[LIQUID_MAX_FACTORS];
+    LIQUID_VLA(unsigned int, factors, LIQUID_MAX_FACTORS);
     unsigned int num_factors = 0;
     unsigned int i;
 

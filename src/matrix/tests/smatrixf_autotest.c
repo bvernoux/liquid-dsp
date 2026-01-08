@@ -52,7 +52,7 @@ void autotest_smatrixf_vmul()
     float x[5] = {7, 1, 5, 2, 2};
 
     float y_test[4] = {8, 0, 6, 16};
-    float y[4];
+    LIQUID_VLA(float, y, 4);
 
     // multiply and run test
     smatrixf_vmul(A,x,y);

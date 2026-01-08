@@ -23,16 +23,16 @@
 #include "autotest/autotest.h"
 #include "liquid.internal.h"
 
-// test data
-float complex sumsqcf_test_x3[3];   float sumsqcf_test_y3;
-float complex sumsqcf_test_x4[4];   float sumsqcf_test_y4;
-float complex sumsqcf_test_x7[7];   float sumsqcf_test_y7;
-float complex sumsqcf_test_x8[8];   float sumsqcf_test_y8;
-float complex sumsqcf_test_x15[15]; float sumsqcf_test_y15;
-float complex sumsqcf_test_x16[16]; float sumsqcf_test_y16;
+// test data (forward declarations)
+extern liquid_float_complex sumsqcf_test_x3[3];   extern float sumsqcf_test_y3;
+extern liquid_float_complex sumsqcf_test_x4[4];   extern float sumsqcf_test_y4;
+extern liquid_float_complex sumsqcf_test_x7[7];   extern float sumsqcf_test_y7;
+extern liquid_float_complex sumsqcf_test_x8[8];   extern float sumsqcf_test_y8;
+extern liquid_float_complex sumsqcf_test_x15[15]; extern float sumsqcf_test_y15;
+extern liquid_float_complex sumsqcf_test_x16[16]; extern float sumsqcf_test_y16;
 
 // helper function
-void sumsqcf_runtest(float complex * _x,
+void sumsqcf_runtest(liquid_float_complex * _x,
                      unsigned int    _n,
                      float           _y)
 {
@@ -54,20 +54,20 @@ void autotest_sumsqcf_8()   {   sumsqcf_runtest( sumsqcf_test_x8,  8,  sumsqcf_t
 void autotest_sumsqcf_15()  {   sumsqcf_runtest( sumsqcf_test_x15, 15, sumsqcf_test_y15 );  }
 void autotest_sumsqcf_16()  {   sumsqcf_runtest( sumsqcf_test_x16, 16, sumsqcf_test_y16 );  }
 
-float complex sumsqcf_test_x3[3] = {
+liquid_float_complex sumsqcf_test_x3[3] = {
   -0.143606511525 +  -0.137405158308*_Complex_I,
   -0.155077565599 +  -0.128712786230*_Complex_I,
    0.259257309730 +  -0.354313982924*_Complex_I};
 float sumsqcf_test_y3 = 0.272871791516851;
 
-float complex sumsqcf_test_x4[4] = {
+liquid_float_complex sumsqcf_test_x4[4] = {
   -0.027688113439 +   0.014257850202*_Complex_I,
    0.135913101830 +  -0.193497844930*_Complex_I,
   -0.184688262513 +  -0.018367564232*_Complex_I,
    0.033677897260 +  -0.365996497668*_Complex_I};
 float sumsqcf_test_y4 = 0.226418463954813;
 
-float complex sumsqcf_test_x7[7] = {
+liquid_float_complex sumsqcf_test_x7[7] = {
   -0.052790293375 +   0.173778162166*_Complex_I,
    0.026113336498 +  -0.228399854303*_Complex_I,
    0.060259677552 +  -0.064704230326*_Complex_I,
@@ -77,7 +77,7 @@ float complex sumsqcf_test_x7[7] = {
   -0.140068020211 +  -0.028552894932*_Complex_I};
 float sumsqcf_test_y7 = 0.179790025178960;
 
-float complex sumsqcf_test_x8[8] = {
+liquid_float_complex sumsqcf_test_x8[8] = {
   -0.114842287937 +  -0.044108491804*_Complex_I,
   -0.027032488500 +  -0.098073597323*_Complex_I,
   -0.248865158871 +  -0.058431293594*_Complex_I,
@@ -88,7 +88,7 @@ float complex sumsqcf_test_x8[8] = {
   -0.048463564653 +  -0.123659611524*_Complex_I};
 float sumsqcf_test_y8 = 0.290592731534459;
 
-float complex sumsqcf_test_x15[15] = {
+liquid_float_complex sumsqcf_test_x15[15] = {
   -0.233166865552 +  -0.325575589001*_Complex_I,
   -0.062157314569 +  -0.052675113778*_Complex_I,
   -0.184924733094 +  -0.037448582846*_Complex_I,
@@ -106,7 +106,7 @@ float complex sumsqcf_test_x15[15] = {
   -0.123711595377 +   0.212526707755*_Complex_I};
 float sumsqcf_test_y15 = 1.44880523546855;
 
-float complex sumsqcf_test_x16[16] = {
+liquid_float_complex sumsqcf_test_x16[16] = {
   -0.065168142317 +   0.069453199546*_Complex_I,
    0.175268433034 +  -0.227486860237*_Complex_I,
   -0.190532229460 +   0.079975095234*_Complex_I,

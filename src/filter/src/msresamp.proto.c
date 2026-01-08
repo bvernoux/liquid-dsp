@@ -85,7 +85,7 @@ MSRESAMP() MSRESAMP(_create)(float _r,
 {
     // validate input
     if (_r <= 0.0f)
-        return liquid_error_config("msresamp_%s_create(), resampling rate must be greater than zero", EXTENSION_FULL);
+        return liquid_error_config_ptr(MSRESAMP(), "msresamp_%s_create(), resampling rate must be greater than zero", EXTENSION_FULL);
 
     // create object
     MSRESAMP() q = (MSRESAMP()) malloc(sizeof(struct MSRESAMP(_s)));
@@ -149,7 +149,7 @@ MSRESAMP() MSRESAMP(_copy)(MSRESAMP() q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("msresamp_%s_copy(), object cannot be NULL", EXTENSION_FULL);
+        return liquid_error_config_ptr(MSRESAMP(), "msresamp_%s_copy(), object cannot be NULL", EXTENSION_FULL);
 
     // create object, copy internal memory, overwrite with specific values
     MSRESAMP() q_copy = (MSRESAMP()) malloc(sizeof(struct MSRESAMP(_s)));

@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // Help function to keep code base small
 void cpfskmodem_test_mod_demod(cpfskmod mod, cpfskdem dem)
@@ -32,9 +33,9 @@ void cpfskmodem_test_mod_demod(cpfskmod mod, cpfskdem dem)
     unsigned int bps = cpfskmod_get_bits_per_symbol(mod);
 
     unsigned int num_symbols = 180 + delay; // number of symbols to test
-    float complex buf[k];      // sample buffer
-    unsigned int  sym_in [num_symbols]; // symbol buffer
-    unsigned int  sym_out[num_symbols]; // symbol buffer
+    LIQUID_VLA(liquid_float_complex, buf, k);      // sample buffer
+    LIQUID_VLA(unsigned int, sym_in, num_symbols); // symbol buffer
+    LIQUID_VLA(unsigned int, sym_out, num_symbols); // symbol buffer
 
     // modulate, demodulate, count errors
     msequence ms = msequence_create_default(7);
@@ -154,7 +155,7 @@ void autotest_cpfskmodem_spectrum()
     // spectral periodogram options
     unsigned int nfft        =   2400;  // spectral periodogram FFT size
     unsigned int num_symbols = 192000;  // number of symbols to generate
-    float complex buf[k];
+    LIQUID_VLA(liquid_float_complex, buf, k);
     unsigned int i;
 
     // modulate many, many symbols
@@ -169,7 +170,7 @@ void autotest_cpfskmodem_spectrum()
     }
 
     // compute power spectral density output
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(periodogram, psd);
 
     // destroy objects
@@ -184,7 +185,7 @@ void autotest_cpfskmodem_spectrum()
       {.fmin= 0.20, .fmax= 0.35, .pmin= 0.0, .pmax=-20.0, .test_lo=0, .test_hi=1},
       {.fmin= 0.35, .fmax= 0.50, .pmin= 0.0, .pmax=-40.0, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     //sprintf(filename,"autotest/logs/cpfskmodem_psd_b%u_h%.3u_k%u_m%u_b%.3u_t%u_autotest.m",
     //        bps, (int)(h*100), k, m, (int)(beta*100), type);
     sprintf(filename,"autotest/logs/cpfskmodem_psd_autotest.m");

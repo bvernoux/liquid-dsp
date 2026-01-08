@@ -36,7 +36,7 @@ void autotest_dsssframe64sync()
 
     // generate the frame
     unsigned int frame_len = dsssframe64gen_get_frame_len(fg);
-    float complex * frame = (float complex *)malloc(frame_len*sizeof(float complex));
+    liquid_float_complex * frame = (liquid_float_complex *)malloc(frame_len*sizeof(liquid_float_complex));
     dsssframe64gen_execute(fg, NULL, NULL, frame);
 
     // add some noise
@@ -108,8 +108,8 @@ void autotest_dsssframe64gen_copy()
 
     // allocate buffers for frames
     unsigned int frame_len = dsssframe64gen_get_frame_len(q0);
-    float complex * buf_0 = (float complex *)malloc(frame_len*sizeof(float complex));
-    float complex * buf_1 = (float complex *)malloc(frame_len*sizeof(float complex));
+    liquid_float_complex * buf_0 = (liquid_float_complex *)malloc(frame_len*sizeof(liquid_float_complex));
+    liquid_float_complex * buf_1 = (liquid_float_complex *)malloc(frame_len*sizeof(liquid_float_complex));
     unsigned char   header [ 8] = {0,0,0,0,0,0,0,0,};
     unsigned char   payload[64] = {
       0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -120,7 +120,7 @@ void autotest_dsssframe64gen_copy()
     dsssframe64gen_execute(q1, header, payload, buf_1);
 
     // ensure identical outputs
-    CONTEND_SAME_DATA(buf_0, buf_1, frame_len*sizeof(float complex));
+    CONTEND_SAME_DATA(buf_0, buf_1, frame_len*sizeof(liquid_float_complex));
 
     // destroy objects and free memory
     dsssframe64gen_destroy(q0);
@@ -136,7 +136,7 @@ void autotest_dsssframe64sync_copy()
     // create object and generate frame
     dsssframe64gen fg = dsssframe64gen_create();
     unsigned int    frame_len = dsssframe64gen_get_frame_len(fg);
-    float complex * frame= (float complex *)malloc(frame_len*sizeof(float complex));
+    liquid_float_complex * frame= (liquid_float_complex *)malloc(frame_len*sizeof(liquid_float_complex));
     dsssframe64gen_execute(fg, NULL, NULL, frame);
 
     // creamte original frame synchronizer

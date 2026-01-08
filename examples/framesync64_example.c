@@ -1,4 +1,4 @@
-char __docstr__[] =
+const char __docstr__[] =
 "This example demonstrates the interfaces to the framegen64 and"
 " framesync64 objects used to completely encapsulate data for"
 " over-the-air transmission.  A 64-byte payload is generated, and then"
@@ -13,6 +13,7 @@ char __docstr__[] =
 #include <math.h>
 #include <time.h>
 #include "liquid.h"
+#include "liquid_vla.h"
 #include "liquid.argparse.h"
 
 // static callback function
@@ -42,7 +43,7 @@ int main(int argc, char*argv[])
 
     // create buffer for the frame samples
     unsigned int frame_len = LIQUID_FRAME64_LEN; // fixed frame length
-    float complex frame[frame_len];
+    LIQUID_VLA(liquid_float_complex, frame, frame_len);
     
     // generate the frame with random header and payload
     framegen64_execute(fg, NULL, NULL, frame);

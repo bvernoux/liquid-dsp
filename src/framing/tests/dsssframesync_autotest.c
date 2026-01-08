@@ -47,7 +47,7 @@ void autotest_dsssframesync()
     // generate the frame
     int frame_complete = 0;
     unsigned int buf_len = 256;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     while (!frame_complete) {
         // write samples to buffer
         frame_complete = dsssframegen_write_samples(fg, buf, buf_len);

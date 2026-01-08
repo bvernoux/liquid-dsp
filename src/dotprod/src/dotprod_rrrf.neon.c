@@ -70,7 +70,7 @@ int dotprod_rrrf_run(float *      _h,
     }
 
     // unload packed array
-    float w[4];
+    LIQUID_VLA(float, w, 4);
     vst1q_f32(w, sum);
     float total = w[0] + w[1] + w[2] + w[3];
 

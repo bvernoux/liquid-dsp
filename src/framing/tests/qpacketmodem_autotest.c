@@ -25,6 +25,7 @@
 #include <math.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // 
 // AUTOTEST : test simple recovery of frame
@@ -40,13 +41,13 @@ void qpacketmodem_modulated(unsigned int _payload_len,
 
     // create and configure packet encoder/decoder object
     qpacketmodem q = qpacketmodem_create();
-    qpacketmodem_configure(q, _payload_len, _check, _fec0, _fec1, _ms);
+    qpacketmodem_configure(q, _payload_len, (crc_scheme)_check, (fec_scheme)_fec0, (fec_scheme)_fec1, _ms);
     if (liquid_autotest_verbose)
         qpacketmodem_print(q);
 
     // initialize payload
-    unsigned char payload_tx[_payload_len];
-    unsigned char payload_rx[_payload_len];
+    LIQUID_VLA(unsigned char, payload_tx, _payload_len);
+    LIQUID_VLA(unsigned char, payload_rx, _payload_len);
 
     // initialize payload
     for (i=0; i<_payload_len; i++) {
@@ -58,7 +59,7 @@ void qpacketmodem_modulated(unsigned int _payload_len,
     unsigned int frame_len = qpacketmodem_get_frame_len(q);
 
     // allocate memory for frame samples
-    float complex frame[frame_len];
+    LIQUID_VLA(liquid_float_complex, frame, frame_len);
 
     // encode frame
     qpacketmodem_encode(q, payload_tx, frame);
@@ -95,14 +96,14 @@ void autotest_qpacketmodem_evm()
 
     // create and configure packet encoder/decoder object
     qpacketmodem q = qpacketmodem_create();
-    qpacketmodem_configure(q, payload_len, check, fec0, fec1, ms);
+    qpacketmodem_configure(q, payload_len, (crc_scheme)check, (fec_scheme)fec0, (fec_scheme)fec1, (modulation_scheme)ms);
 
     // initialize payload
-    unsigned char payload_rx[payload_len];
+    LIQUID_VLA(unsigned char, payload_rx, payload_len);
 
     // get frame length and allocate memory for frame samples
     unsigned int frame_len = qpacketmodem_get_frame_len(q);
-    float complex frame[frame_len];
+    LIQUID_VLA(liquid_float_complex, frame, frame_len);
 
     // encode frame (random bits)
     qpacketmodem_encode(q, NULL, frame);
@@ -145,13 +146,13 @@ void qpacketmodem_unmodulated(unsigned int _payload_len,
 
     // create and configure packet encoder/decoder object
     qpacketmodem q = qpacketmodem_create();
-    qpacketmodem_configure(q, _payload_len, _check, _fec0, _fec1, _ms);
+    qpacketmodem_configure(q, _payload_len, (crc_scheme)_check, (fec_scheme)_fec0, (fec_scheme)_fec1, _ms);
     if (liquid_autotest_verbose)
         qpacketmodem_print(q);
 
     // initialize payload
-    unsigned char payload_tx[_payload_len];
-    unsigned char payload_rx[_payload_len];
+    LIQUID_VLA(unsigned char, payload_tx, _payload_len);
+    LIQUID_VLA(unsigned char, payload_rx, _payload_len);
 
     // initialize payload
     for (i=0; i<_payload_len; i++) {
@@ -163,7 +164,7 @@ void qpacketmodem_unmodulated(unsigned int _payload_len,
     unsigned int frame_len = qpacketmodem_get_frame_len(q);
 
     // allocate memory for frame samples
-    unsigned char frame_syms[frame_len];
+    LIQUID_VLA(unsigned char, frame_syms, frame_len);
 
     // encode frame symbols
     qpacketmodem_encode_syms(q, payload_tx, frame_syms);
@@ -201,15 +202,15 @@ void autotest_qpacketmodem_copy()
 
     // create and configure packet encoder/decoder object
     qpacketmodem q0 = qpacketmodem_create();
-    qpacketmodem_configure(q0, payload_len, check, fec0, fec1, ms);
+    qpacketmodem_configure(q0, payload_len, (crc_scheme)check, (fec_scheme)fec0, (fec_scheme)fec1, ms);
 
     // initialize buffers
     unsigned int frame_len = qpacketmodem_get_frame_len(q0);
-    unsigned char payload_tx  [payload_len];
-    float complex frame_syms_0[frame_len];
-    float complex frame_syms_1[frame_len];
-    unsigned char payload_rx_0[payload_len];
-    unsigned char payload_rx_1[payload_len];
+    LIQUID_VLA(unsigned char, payload_tx, payload_len);
+    LIQUID_VLA(liquid_float_complex, frame_syms_0, frame_len);
+    LIQUID_VLA(liquid_float_complex, frame_syms_1, frame_len);
+    LIQUID_VLA(unsigned char, payload_rx_0, payload_len);
+    LIQUID_VLA(unsigned char, payload_rx_1, payload_len);
 
     // initialize payload
     for (i=0; i<payload_len; i++)

@@ -36,7 +36,7 @@ void fskmodem_test_mod_demod(unsigned int _m,
     fskdem dem = fskdem_create(_m,_k,_bandwidth);
 
     unsigned int M = 1 << _m;   // constellation size
-    float complex buf[_k];      // transmit buffer
+    LIQUID_VLA(liquid_float_complex, buf, _k);      // transmit buffer
     
     // modulate, demodulate, count errors
     unsigned int i;
@@ -95,8 +95,8 @@ void autotest_fskmod_copy()
     fskmod mod_orig = fskmod_create(m,k,bw);
 
     unsigned int num_symbols = 96;
-    float complex buf_orig[k];
-    float complex buf_copy[k];
+    LIQUID_VLA(liquid_float_complex, buf_orig, k);
+    LIQUID_VLA(liquid_float_complex, buf_copy, k);
     msequence ms = msequence_create_default(7);
 
     // run original object
@@ -117,7 +117,7 @@ void autotest_fskmod_copy()
         fskmod_modulate(mod_orig, s, buf_orig);
         fskmod_modulate(mod_copy, s, buf_copy);
         // check result
-        CONTEND_SAME_DATA(buf_orig, buf_copy, k*sizeof(float complex));
+        CONTEND_SAME_DATA(buf_orig, buf_copy, k*sizeof(liquid_float_complex));
     }
 
     // clean it up
@@ -138,7 +138,7 @@ void autotest_fskdem_copy()
     fskdem dem_orig = fskdem_create(m, k, bw);
 
     unsigned int num_symbols = 96;
-    float complex buf[k];
+    LIQUID_VLA(liquid_float_complex, buf, k);
 
     // run original object
     unsigned int i, j;

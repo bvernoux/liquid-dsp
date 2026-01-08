@@ -13,6 +13,10 @@ project(liquid VERSION ${LIQUID_VERSION} LANGUAGES C CXX)
 option(BUILD_EXAMPLES    "Set to ON to build examples"               ON)
 option(BUILD_AUTOTESTS   "Set to ON to build autotest program"       ON)
 option(BUILD_BENCHMARKS  "Set to ON to build benchmark program"      ON)
+
+# Windows compatibility notes:
+# - MINGW64: Full support (library, examples, autotests, benchmarks)
+# - MSVC: Full support (library, examples, autotests, benchmarks)
 option(BUILD_SHARED_LIBS "Set to ON to build shared object library"  ON)
 option(ENABLE_SIMD       "Set to ON to build SIMD extensions"        ON)
 option(FIND_SIMD         "Set to ON to find SIMD extensions"         ON)
@@ -40,7 +44,12 @@ set(NAMESPACE liquid)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ version selection")  # or 11, 14, 17, 20
+# MSVC requires C++20 for designated initializers in benchmark/autotest code
+if(MSVC)
+    set(CMAKE_CXX_STANDARD 20 CACHE STRING "C++ version selection")
+else()
+    set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ version selection")
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)  # optional, ensure standard is supported
 #set(CMAKE_CXX_EXTENSIONS OFF)  # optional, keep compiler extensions off
 
@@ -56,14 +65,36 @@ endif()
 
 # check external libraries
 #variable_watch(fftw3f_INCLUDE_DIR)
-if (FIND_FFTW)
+# FFTW is disabled on MSVC because fftwf_complex (float[2]) is incompatible
+# with std::complex<float> when compiling C as C++
+if (FIND_FFTW AND NOT MSVC)
     find_package(fftw3f)
 endif()
 
 # global flags
 if (MSVC)
+    # Export all symbols for DLL to generate import library (.lib)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     # warning level 4
     add_compile_options(/W4)
+    # MSVC: Compile C files as C++ to get std::complex operator support
+    # This is needed because MSVC doesn't support C99 _Complex type
+    # For Visual Studio generator, we must set LANGUAGE property on source files
+    file(GLOB_RECURSE LIQUID_C_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/autotest/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/bench/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.c")
+    set_source_files_properties(${LIQUID_C_SOURCES} PROPERTIES LANGUAGE CXX)
+    # Define LIQUID_MSVC_AS_CPP so liquid.h uses std::complex instead of _Complex
+    # _INC_COMPLEX and _COMPLEX_H are defined in liquid.h to prevent Windows SDK
+    # complex.h from being included (it conflicts with std::complex usage)
+    add_compile_definitions(LIQUID_MSVC_AS_CPP)
+    # Disable some warnings that are noisy when compiling C as C++
+    # /wd4003: not enough arguments for macro - C99 allows empty macro args, MSVC warns
+    # /wd4005: macro redefinition - _INC_COMPLEX and _COMPLEX_H defined in liquid.h
+    add_compile_options(/wd4244 /wd4305 /wd4267 /wd4018 /wd4996 /wd4146 /wd4838 /wd4554 /wd4003 /wd4005)
 else()
     # additional warnings
     add_compile_options(-Wall -fPIC -O3 -Wno-deprecated -Wno-deprecated-declarations)
@@ -268,6 +299,10 @@ add_library(utility OBJECT
     src/utility/src/pack_bytes.c
     src/utility/src/shift_array.c
     src/utility/src/utility.c)
+# Add getopt implementation for MSVC (MinGW has getopt.h)
+if(MSVC)
+    target_sources(utility PRIVATE src/utility/src/getopt_msvc.c)
+endif()
 
 add_library(vector OBJECT)
 
@@ -279,6 +314,10 @@ foreach(lib
         PUBLIC
             "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include;${CMAKE_CURRENT_BINARY_DIR}>"
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    # Define LIQUID_BUILD_DLL for object libraries when building shared DLL
+    if(MSVC AND BUILD_SHARED_LIBS)
+        target_compile_definitions(${lib} PRIVATE LIQUID_BUILD_DLL)
+    endif()
 endforeach()
 
 # ---------------------------------------- SIMD extensions ----------------------------------------
@@ -385,6 +424,11 @@ add_library(${LIBNAME}
     $<TARGET_OBJECTS:vector>)
 add_library(${NAMESPACE}::${LIBNAME} ALIAS ${LIBNAME})
 
+# Define LIQUID_BUILD_DLL when building the library (for dllexport)
+if(MSVC AND BUILD_SHARED_LIBS)
+    target_compile_definitions(${LIBNAME} PRIVATE LIQUID_BUILD_DLL)
+endif()
+
 # TODO: build static library in addition to shared
 # https://alexreinking.com/blog/building-a-dual-shared-and-static-library-with-cmake.html
 
@@ -436,7 +480,10 @@ if(COVERAGE)
 endif(COVERAGE)
 
 
-target_link_libraries(${LIBNAME} c m)
+# On Windows, c and m libraries are not needed (part of the runtime)
+if(NOT WIN32)
+    target_link_libraries(${LIBNAME} c m)
+endif()
 if (fftw3f_FOUND)
     target_link_libraries(${LIBNAME} fftw3f)
 endif()
@@ -797,15 +844,15 @@ if(BUILD_AUTOTESTS)
     add_custom_command(
         OUTPUT  autotest_include.h
         DEPENDS
-            ${PROJECT_BINARY_DIR}/autoscript
+            autoscript
             ${AUTOTESTS}
-        COMMAND ${PROJECT_BINARY_DIR}/autoscript / autotest ${AUTOTESTS} > autotest_include.h
+        COMMAND $<TARGET_FILE:autoscript> / autotest ${AUTOTESTS} > autotest_include.h
         )
 
     # create output logging directory
     add_custom_command(
         OUTPUT autotest/logs
-        COMMAND mkdir -p autotest/logs
+        COMMAND ${CMAKE_COMMAND} -E make_directory autotest/logs
         )
 
     add_executable(xautotest
@@ -821,6 +868,10 @@ if(BUILD_AUTOTESTS)
     target_include_directories(xautotest PRIVATE include .)
 
     target_link_libraries(xautotest ${LIBNAME})
+    # Increase stack size for MSVC to handle VLA allocations via _alloca
+    if(MSVC)
+        target_link_options(xautotest PRIVATE /STACK:33554432)  # 32MB stack
+    endif()
     if(COVERAGE)
         target_compile_options(xautotest PRIVATE -coverage -O0 -g)
         target_link_options(xautotest PRIVATE -coverage)
@@ -918,9 +969,9 @@ if(BUILD_BENCHMARKS)
     add_custom_command(
         OUTPUT  benchmark_include.h
         DEPENDS
-            ${PROJECT_BINARY_DIR}/autoscript
+            autoscript
             ${BENCHMARKS}
-        COMMAND ${PROJECT_BINARY_DIR}/autoscript / benchmark ${BENCHMARKS} > benchmark_include.h
+        COMMAND $<TARGET_FILE:autoscript> / benchmark ${BENCHMARKS} > benchmark_include.h
         )
 
     # create output logging directory
@@ -938,6 +989,10 @@ if(BUILD_BENCHMARKS)
         )
     target_include_directories(benchmark PRIVATE include .)
     target_link_libraries(benchmark ${LIBNAME})
+    # Increase stack size for MSVC to handle VLA allocations via _alloca
+    if(MSVC)
+        target_link_options(benchmark PRIVATE /STACK:8388608)  # 8MB stack
+    endif()
 endif(BUILD_BENCHMARKS)
 
 

@@ -30,8 +30,8 @@ void autotest_iirfilt_integrator()
     unsigned int num_samples = 40;
 
     // allocate memory for data arrays
-    float buf_0[num_samples]; // filter input
-    float buf_1[num_samples]; // filter output
+    LIQUID_VLA(float, buf_0, num_samples); // filter input
+    LIQUID_VLA(float, buf_1, num_samples); // filter output
 
     // generate input signal
     unsigned int i;
@@ -56,8 +56,8 @@ void autotest_iirfilt_differentiator()
     unsigned int num_samples = 400;
 
     // allocate memory for data arrays
-    float buf_0[num_samples]; // filter input
-    float buf_1[num_samples]; // filter output
+    LIQUID_VLA(float, buf_0, num_samples); // filter input
+    LIQUID_VLA(float, buf_1, num_samples); // filter output
 
     // generate input signal
     unsigned int i;
@@ -91,7 +91,7 @@ void autotest_iirfilt_dcblock()
     spgramcf q = spgramcf_create(nfft, LIQUID_WINDOW_HANN, nfft/2, nfft/4);
 
     // start running input through filter
-    float complex x, y;
+    liquid_float_complex x, y;
     unsigned int i;
     for (i=0; i<n; i++) {
         // generate noise input
@@ -105,11 +105,11 @@ void autotest_iirfilt_dcblock()
     }
 
     // verify result
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(q, psd);
     autotest_psd_s regions[] = {
         {.fmin=-0.500f, .fmax=-0.200f, .pmin=-tol, .pmax=+tol, .test_lo=1, .test_hi=1},
-        {.fmin=-0.002f, .fmax=+0.002f, .pmin=-tol, .pmax=-20,  .test_lo=0, .test_hi=1},
+        {.fmin=-0.002f, .fmax=+0.002f, .pmin=-tol, .pmax=-20.0f,  .test_lo=0, .test_hi=1},
         {.fmin=+0.200f, .fmax=+0.500f, .pmin=-tol, .pmax=+tol, .test_lo=1, .test_hi=1},
     };
     liquid_autotest_validate_spectrum(psd, nfft, regions, 3,
@@ -129,9 +129,9 @@ void testbench_iirfilt_copy(liquid_iirdes_format _format)
 
     // start running input through filter
     unsigned int i, num_samples = 80;
-    float complex y0, y1;
+    liquid_float_complex y0, y1;
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         iirfilt_crcf_execute(q0, v, &y0);
     }
 
@@ -140,12 +140,12 @@ void testbench_iirfilt_copy(liquid_iirdes_format _format)
 
     // continue running through both filters
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         iirfilt_crcf_execute(q0, v, &y0);
         iirfilt_crcf_execute(q1, v, &y1);
 
         // compare result
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy filter objects

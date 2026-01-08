@@ -25,17 +25,18 @@
 #include <string.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // common structure for relaying information to/from callback
 typedef struct {
     int             id;
-    float complex * buf;
+    liquid_float_complex * buf;
     unsigned int    buf_len;
     unsigned int    count;
 } autotest_qdsync_s;
 
 // synchronization callback, return 0:continue, 1:reset
-int autotest_qdsync_callback(float complex * _buf,
+int autotest_qdsync_callback(liquid_float_complex * _buf,
                              unsigned int    _buf_len,
                              void *          _context)
 {
@@ -68,8 +69,8 @@ void testbench_qdsync_linear(unsigned int _k,
     float        tau          = 0.400f; // fractional sample timing offset
 
     // generate synchronization sequence (QPSK symbols)
-    float complex seq_tx[seq_len];  // transmitted
-    float complex seq_rx[seq_len];  // received with initial correction
+    LIQUID_VLA(liquid_float_complex, seq_tx, seq_len);  // transmitted
+    LIQUID_VLA(liquid_float_complex, seq_rx, seq_len);  // received with initial correction
     unsigned int i;
     for (i=0; i<seq_len ; i++) {
         seq_tx[i] = (rand() % 2 ? 1.0f : -1.0f) * M_SQRT1_2 +
@@ -90,10 +91,10 @@ void testbench_qdsync_linear(unsigned int _k,
     fdelay_crcf_set_delay(delay, 10*k + tau);
 
     // run signal through sync object
-    float complex buf[k];
+    LIQUID_VLA(liquid_float_complex, buf, k);
     for (i=0; i<4*seq_len + 2*m + 50; i++) {
         // produce symbol (preamble sequence or zero)
-        float complex s = (i < seq_len) ? seq_tx[i] : 0;
+        liquid_float_complex s = (i < seq_len) ? seq_tx[i] : 0;
 
         // interpolate symbol
         firinterp_crcf_execute(interp, s, buf);
@@ -171,8 +172,8 @@ void autotest_qdsync_set_buf_len()
     int          ftype        = LIQUID_FIRFILT_ARKAISER;
 
     // generate synchronization sequence (QPSK symbols)
-    float complex seq_tx[seq_len];  // transmitted
-    float complex seq_rx[seq_len];  // received with initial correction
+    LIQUID_VLA(liquid_float_complex, seq_tx, seq_len);  // transmitted
+    LIQUID_VLA(liquid_float_complex, seq_rx, seq_len);  // received with initial correction
     unsigned int i;
     for (i=0; i<seq_len ; i++)
         seq_tx[i] = cexpf(_Complex_I*2*M_PI*randf());
@@ -187,7 +188,7 @@ void autotest_qdsync_set_buf_len()
     firinterp_crcf interp = firinterp_crcf_create_prototype(ftype,k,m,beta,0);
 
     // run signal through sync object
-    float complex buf[k];
+    LIQUID_VLA(liquid_float_complex, buf, k);
     for (i=0; i<seq_len + 20*m + 200; i++) {
         // interpolate symbol
         firinterp_crcf_execute(interp, (i < seq_len) ? seq_tx[i] : 0, buf);
@@ -231,9 +232,9 @@ void autotest_qdsync_cccf_copy()
     unsigned int i;
 
     // generate random frame sequence
-    float complex seq_tx     [seq_len];  // transmitted
-    float complex seq_rx_orig[seq_len];  // received with initial correction (original)
-    float complex seq_rx_copy[seq_len];  // received with initial correction (original)
+    LIQUID_VLA(liquid_float_complex, seq_tx, seq_len);  // transmitted
+    LIQUID_VLA(liquid_float_complex, seq_rx_orig, seq_len);  // received with initial correction (original)
+    LIQUID_VLA(liquid_float_complex, seq_rx_copy, seq_len);  // received with initial correction (original)
     for (i=0; i<seq_len ; i++) {
         seq_tx[i] = (rand() % 2 ? 1.0f : -1.0f) * M_SQRT1_2 +
                     (rand() % 2 ? 1.0f : -1.0f) * M_SQRT1_2 * _Complex_I;
@@ -248,7 +249,7 @@ void autotest_qdsync_cccf_copy()
     firinterp_crcf interp = firinterp_crcf_create_prototype(ftype,k,m,beta,0);
 
     // feed some symbols through synchronizer (about half)
-    float complex buf[k];
+    LIQUID_VLA(liquid_float_complex, buf, k);
     for (i=0; i<split; i++) {
         // interpolate symbol
         firinterp_crcf_execute(interp, (i < seq_len) ? seq_tx[i] : 0, buf);
@@ -264,7 +265,7 @@ void autotest_qdsync_cccf_copy()
 
     // copy object, but set different context
     autotest_qdsync_s c_copy = {.id=1, .buf=seq_rx_copy, .buf_len=seq_len, .count=c_orig.count};
-    memmove(c_copy.buf, c_orig.buf, c_orig.count*sizeof(float complex)); // copy what's in buffer so far
+    memmove(c_copy.buf, c_orig.buf, c_orig.count*sizeof(liquid_float_complex)); // copy what's in buffer so far
     qdsync_cccf q_copy = qdsync_cccf_copy(q_orig);
     qdsync_cccf_set_context(q_copy, (void*)&c_copy);
 
@@ -293,7 +294,7 @@ void autotest_qdsync_cccf_copy()
     //            crealf(c_copy.buf[i]), cimagf(c_copy.buf[i]));
     //}
     // data should be identical at this point
-    CONTEND_SAME_DATA(c_orig.buf, c_copy.buf, seq_len*sizeof(float complex));
+    CONTEND_SAME_DATA(c_orig.buf, c_copy.buf, seq_len*sizeof(liquid_float_complex));
 
     // destroy objects
     firinterp_crcf_destroy(interp);
@@ -315,7 +316,7 @@ void autotest_qdsync_cccf_config()
     CONTEND_ISNULL(qdsync_cccf_create_linear(NULL,0,LIQUID_FIRFILT_ARKAISER,4,12,0.25f,NULL,NULL));
 
     // create proper object and test configurations
-    float complex seq[] = {+1,-1,+1,-1,-1,+1,-1,+1,-1,+1,-1,+1,+1,+1,-1,+1,-1,-1,-1,-1,};
+    liquid_float_complex seq[] = {+1,-1,+1,-1,-1,+1,-1,+1,-1,+1,-1,+1,+1,+1,-1,+1,-1,-1,-1,-1,};
     qdsync_cccf q = qdsync_cccf_create_linear(seq,20,LIQUID_FIRFILT_ARKAISER,4,12,0.25f,NULL,NULL);
 
     CONTEND_EQUALITY(LIQUID_OK, qdsync_cccf_print(q))

@@ -21,7 +21,9 @@
  */
 
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include "autotest/autotest.h"
 #include "liquid.h"
 
@@ -87,7 +89,7 @@ void autotest_nco_crcf_constrain()
 void autotest_nco_crcf_copy()
 {
     // create and initialize object
-    nco_crcf nco_0 = nco_crcf_create(LIQUID_VCO);
+    nco_crcf nco_0 = nco_crcf_create((liquid_ncotype)LIQUID_VCO);
     nco_crcf_set_phase        (nco_0, 1.23456f);
     nco_crcf_set_frequency    (nco_0, 5.67890f);
     nco_crcf_pll_set_bandwidth(nco_0, 0.011f);
@@ -96,7 +98,7 @@ void autotest_nco_crcf_copy()
     nco_crcf nco_1 = nco_crcf_copy(nco_0);
 
     unsigned int i, n = 240;
-    float complex v0, v1;
+    liquid_float_complex v0, v1;
     for (i=0; i<n; i++) {
         // received complex signal
         nco_crcf_cexpf(nco_0,&v0);
@@ -111,7 +113,7 @@ void autotest_nco_crcf_copy()
         nco_crcf_step(nco_1);
 
         // check output
-        CONTEND_EQUALITY(v0, v1);
+        CONTEND_EQUALITY_COMPLEX(v0, v1);
     }
 
     // clean it up
@@ -133,7 +135,7 @@ void autotest_nco_config()
     CONTEND_ISNULL(nco_crcf_copy(NULL));
 
     // create proper NCO object and test configurations
-    nco_crcf q_nco = nco_crcf_create(LIQUID_NCO);
+    nco_crcf q_nco = nco_crcf_create((liquid_ncotype)LIQUID_NCO);
     CONTEND_EQUALITY(LIQUID_OK, nco_crcf_print(q_nco))
     nco_crcf_destroy(q_nco);
 }

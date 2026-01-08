@@ -73,7 +73,7 @@ void autotest_crandnf()
 {
     unsigned long int N = LIQUID_RANDOM_AUTOTEST_NUM_TRIALS;
     unsigned long int i;
-    float complex x;
+    liquid_float_complex x;
     float m1=0.0f, m2=0.0f;
     float tol = LIQUID_RANDOM_AUTOTEST_ERROR_TOL;
 

@@ -57,8 +57,8 @@ struct bpacketgen_s {
     //  2   :   fec0
     //  3   :   fec1
     //  4:5 :   payload length
-    unsigned char header_dec[6];    // uncoded bytes
-    unsigned char header_enc[12];   // 12 = 6 + crc16 at hamming(12,8)
+    LIQUID_VLA(unsigned char, header_dec, 6);    // uncoded bytes
+    LIQUID_VLA(unsigned char, header_enc, 12);   // 12 = 6 + crc16 at hamming(12,8)
 
     // objects
     msequence ms;
@@ -84,9 +84,9 @@ bpacketgen bpacketgen_create(unsigned int _m,
     // create bpacketgen object
     bpacketgen q = (bpacketgen) malloc(sizeof(struct bpacketgen_s));
     q->dec_msg_len  = _dec_msg_len;
-    q->crc          = _crc;
-    q->fec0         = _fec0;
-    q->fec1         = _fec1;
+    q->crc          = (crc_scheme)_crc;
+    q->fec0         = (fec_scheme)_fec0;
+    q->fec1         = (fec_scheme)_fec1;
 
     // implied values
     q->g = 0;
@@ -142,9 +142,9 @@ bpacketgen bpacketgen_recreate(bpacketgen _q,
 
     // re-create internal packetizer object
     _q->dec_msg_len = _dec_msg_len;
-    _q->crc         = _crc;
-    _q->fec0        = _fec0;
-    _q->fec1        = _fec1;
+    _q->crc         = (crc_scheme)_crc;
+    _q->fec0        = (fec_scheme)_fec0;
+    _q->fec1        = (fec_scheme)_fec1;
 
     // derived values
     _q->enc_msg_len = packetizer_compute_enc_msg_len(_q->dec_msg_len,

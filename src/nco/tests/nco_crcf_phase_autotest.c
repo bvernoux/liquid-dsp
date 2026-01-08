@@ -21,7 +21,9 @@
  */
 
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include "autotest/autotest.h"
 #include "liquid.h"
 
@@ -38,7 +40,7 @@ void nco_crcf_phase_test(float _theta,
                          float _tol)
 {
     // create object
-    nco_crcf nco = nco_crcf_create(_type);
+    nco_crcf nco = nco_crcf_create((liquid_ncotype)_type);
 
     // set phase
     nco_crcf_set_phase(nco, _theta);
@@ -93,7 +95,7 @@ void autotest_nco_crcf_phase()
 // test floating point precision nco
 //
 void autotest_nco_basic() {
-    nco_crcf p = nco_crcf_create(LIQUID_NCO);
+    nco_crcf p = nco_crcf_create((liquid_ncotype)LIQUID_NCO);
 
     unsigned int i;     // loop index
     float s, c;         // sine/cosine result
@@ -152,7 +154,7 @@ void autotest_nco_mixing() {
     float tol = 0.05f;
 
     // initialize nco object
-    nco_crcf p = nco_crcf_create(LIQUID_NCO);
+    nco_crcf p = nco_crcf_create((liquid_ncotype)LIQUID_NCO);
     nco_crcf_set_frequency(p, f);
     nco_crcf_set_phase(p, phi);
 
@@ -163,8 +165,8 @@ void autotest_nco_mixing() {
         nco_crcf_sincos(p, &nco_q, &nco_i);
 
         // mix back to zero phase
-        complex float nco_cplx_in = nco_i + _Complex_I*nco_q;
-        complex float nco_cplx_out;
+        liquid_float_complex nco_cplx_in = nco_i + _Complex_I*nco_q;
+        liquid_float_complex nco_cplx_out;
         nco_crcf_mix_down(p, nco_cplx_in, &nco_cplx_out);
 
         // assert mixer output is correct
@@ -198,15 +200,15 @@ void autotest_nco_block_mixing()
     unsigned int num_samples = 1024;
 
     // store samples
-    float complex * x = (float complex*)malloc(num_samples*sizeof(float complex));
-    float complex * y = (float complex*)malloc(num_samples*sizeof(float complex));
+    liquid_float_complex * x = (liquid_float_complex*)malloc(num_samples*sizeof(liquid_float_complex));
+    liquid_float_complex * y = (liquid_float_complex*)malloc(num_samples*sizeof(liquid_float_complex));
 
     // generate complex sin/cos
     for (i=0; i<num_samples; i++)
         x[i] = cexpf(_Complex_I*(f*i + phi));
 
     // initialize nco object
-    nco_crcf p = nco_crcf_create(LIQUID_NCO);
+    nco_crcf p = nco_crcf_create((liquid_ncotype)LIQUID_NCO);
     nco_crcf_set_frequency(p, f);
     nco_crcf_set_phase(p, phi);
 

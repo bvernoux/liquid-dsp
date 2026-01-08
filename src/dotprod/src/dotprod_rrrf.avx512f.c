@@ -153,7 +153,7 @@ dotprod_rrrf dotprod_rrrf_copy(dotprod_rrrf q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("dotprod_rrrf_copy().avx512f, object cannot be NULL");
+        return liquid_error_config_ptr(dotprod_rrrf, "dotprod_rrrf_copy().avx512f, object cannot be NULL");
 
     dotprod_rrrf q_copy = (dotprod_rrrf)malloc(sizeof(struct dotprod_rrrf_s));
     q_copy->n = q_orig->n;

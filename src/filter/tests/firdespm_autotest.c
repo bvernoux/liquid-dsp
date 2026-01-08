@@ -73,7 +73,7 @@ void autotest_firdespm_bandpass_n24()
     };
 
     // Create filter
-    float h[n];
+    LIQUID_VLA(float, h, n);
     firdespm_run(n,num_bands,bands,des,weights,NULL,btype,h);
 
     // Ensure data are equal
@@ -136,7 +136,7 @@ void autotest_firdespm_bandpass_n32()
     };
 
     // Create filter
-    float h[n];
+    LIQUID_VLA(float, h, n);
     firdespm_run(n,num_bands,bands,des,weights,NULL,btype,h);
 
     // Ensure data are equal
@@ -152,14 +152,14 @@ void autotest_firdespm_lowpass()
     float        fc = 0.2f;
     float        As = 60.0f;
     float        mu = 0.0f;
-    float        h[n];
+    LIQUID_VLA(float, h, n);
     firdespm_lowpass(n,fc,As,mu,h);
 
     // verify resulting spectrum
     autotest_psd_s regions[] = {
-      {.fmin=-0.5,   .fmax=-0.25,  .pmin= 0,    .pmax=-60,   .test_lo=0, .test_hi=1},
+      {.fmin=-0.5,   .fmax=-0.25,  .pmin=0.0f,    .pmax=-60.0f,   .test_lo=0, .test_hi=1},
       {.fmin=-0.15,  .fmax=+0.15,  .pmin=-0.02, .pmax=+0.02, .test_lo=1, .test_hi=1},
-      {.fmin= 0.25,  .fmax=+0.5,   .pmin= 0,    .pmax=-60,   .test_lo=0, .test_hi=1},
+      {.fmin= 0.25,  .fmax=+0.5,   .pmin=0.0f,    .pmax=-60.0f,   .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signalf(h, n, regions, 3,
         liquid_autotest_verbose ? "autotest/logs/firdespm_lowpass.m" : NULL);
@@ -185,7 +185,7 @@ void autotest_firdespm_callback()
     float        bands[4]  = {0.0, 0.35, 0.4, 0.5};
 
     // design filter
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     firdespm q = firdespm_create_callback(h_len,num_bands,bands,btype,
             callback_firdespm_autotest,NULL);
     firdespm_execute(q,h);
@@ -193,15 +193,15 @@ void autotest_firdespm_callback()
 
     // verify resulting spectrum
     autotest_psd_s regions[] = {
-      {.fmin=-0.50,  .fmax=-0.40,  .pmin= 0, .pmax=-20, .test_lo=0, .test_hi=1},
+      {.fmin=-0.50,  .fmax=-0.40,  .pmin=0.0f, .pmax=-20.0f, .test_lo=0, .test_hi=1},
       {.fmin=-0.36,  .fmax=-0.30,  .pmin=52, .pmax= 62, .test_lo=1, .test_hi=1},
       {.fmin=-0.30,  .fmax=-0.20,  .pmin=34, .pmax= 53, .test_lo=1, .test_hi=1},
       {.fmin=-0.20,  .fmax=-0.10,  .pmin=15, .pmax= 36, .test_lo=1, .test_hi=1},
-      {.fmin=-0.10,  .fmax=+0.10,  .pmin= 0, .pmax= 19, .test_lo=1, .test_hi=1},
+      {.fmin=-0.10,  .fmax=+0.10,  .pmin=0.0f, .pmax= 19, .test_lo=1, .test_hi=1},
       {.fmin= 0.10,  .fmax= 0.20,  .pmin=15, .pmax= 36, .test_lo=1, .test_hi=1},
       {.fmin= 0.20,  .fmax= 0.30,  .pmin=34, .pmax= 53, .test_lo=1, .test_hi=1},
       {.fmin= 0.30,  .fmax= 0.36,  .pmin=52, .pmax= 62, .test_lo=1, .test_hi=1},
-      {.fmin= 0.40,  .fmax= 0.50,  .pmin= 0, .pmax=-20, .test_lo=0, .test_hi=1},
+      {.fmin= 0.40,  .fmax= 0.50,  .pmin=0.0f, .pmax=-20.0f, .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signalf(h, h_len, regions, 9,
         liquid_autotest_verbose ? "autotest/logs/firdespm_callback.m" : NULL);
@@ -212,7 +212,7 @@ void testbench_firdespm_halfband_ft(unsigned int _m,
                                     float        _ft)
 {
     unsigned int h_len = 4*_m + 1;
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     liquid_firdespm_halfband_ft(_m, _ft, h);
 
     // estimate stop band suppression
@@ -222,11 +222,11 @@ void testbench_firdespm_halfband_ft(unsigned int _m,
     float f0 = 0.25f - 0.5f*_ft;
     float f1 = 0.25f + 0.5f*_ft;
     autotest_psd_s regions[] = {
-      {.fmin=-0.5, .fmax= -f1, .pmin= 0,   .pmax=-As,  .test_lo=0, .test_hi=1},
+      {.fmin=-0.5, .fmax= -f1, .pmin=0.0f,   .pmax=-As,  .test_lo=0, .test_hi=1},
       {.fmin=-f0,  .fmax=  f0, .pmin=-0.1, .pmax= 0.1, .test_lo=1, .test_hi=1},
-      {.fmin= f1,  .fmax= 0.5, .pmin= 0,   .pmax=-As,  .test_lo=0, .test_hi=1},
+      {.fmin= f1,  .fmax= 0.5, .pmin=0.0f,   .pmax=-As,  .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/firdespm_halfband_m%u_ft%.3u.m", _m, (int)(_ft*1000));
     liquid_autotest_validate_psd_signalf(h, h_len, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -273,7 +273,7 @@ void autotest_firdespm_config()
 #if !LIQUID_SUPPRESS_ERROR_OUTPUT
     fprintf(stderr,"warning: ignore potential errors here; checking for invalid configurations\n");
 #endif
-    float h[51];
+    LIQUID_VLA(float, h, 51);
     CONTEND_EQUALITY(   LIQUID_OK, firdespm_lowpass(51, 0.2, 60, 0.0, h) ) // ok
     CONTEND_INEQUALITY( LIQUID_OK, firdespm_lowpass( 0, 0.2, 60, 0.0, h) )
     CONTEND_INEQUALITY( LIQUID_OK, firdespm_lowpass(51, 0.2, 60,-1.0, h) )
@@ -330,7 +330,7 @@ void autotest_firdespm_differentiator()
     float bands[4] = {0.0, 0.2, 0.3, 0.5};  // regions
     float   des[2] = {1.0,      0.0};       // desired values
     float     w[2] = {1.0,      1.0};       // weights
-    float     h[n];
+    LIQUID_VLA(float, h, n);
     liquid_firdespm_wtype wtype[2] = {LIQUID_FIRDESPM_FLATWEIGHT, LIQUID_FIRDESPM_FLATWEIGHT};
     liquid_firdespm_btype btype = LIQUID_FIRDESPM_DIFFERENTIATOR;
     firdespm q = firdespm_create(n, 2, bands, des, w, wtype, btype);
@@ -354,7 +354,7 @@ void autotest_firdespm_hilbert()
     float bands[4] = {0.0, 0.2, 0.3, 0.5};  // regions
     float   des[2] = {1.0,      0.0};       // desired values
     float     w[2] = {1.0,      1.0};       // weights
-    float     h[n];
+    LIQUID_VLA(float, h, n);
     liquid_firdespm_wtype wtype[2] = {LIQUID_FIRDESPM_FLATWEIGHT, LIQUID_FIRDESPM_FLATWEIGHT};
     liquid_firdespm_btype btype = LIQUID_FIRDESPM_HILBERT;
     firdespm q = firdespm_create(n, 2, bands, des, w, wtype, btype);

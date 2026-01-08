@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // Help function to keep code base small
 void gmskmodem_test_mod_demod(unsigned int _k,
@@ -39,9 +40,9 @@ void gmskmodem_test_mod_demod(unsigned int _k,
 
     msequence ms = msequence_create_default(7);
 
-    float complex buf[_k];      // sample buffer
-    unsigned int  sym_in [num_symbols]; // symbol buffer
-    unsigned int  sym_out[num_symbols]; // symbol buffer
+    LIQUID_VLA(liquid_float_complex, buf, _k);      // sample buffer
+    LIQUID_VLA(unsigned int, sym_in, num_symbols); // symbol buffer
+    LIQUID_VLA(unsigned int, sym_out, num_symbols); // symbol buffer
 
     // modulate, demodulate, count errors
     unsigned int i;
@@ -110,8 +111,8 @@ void autotest_gmskmod_copy()
     gmskmod mod_orig = gmskmod_create(k, m, bt);
 
     unsigned int num_symbols = 16;
-    float complex buf_orig[k];
-    float complex buf_copy[k];
+    LIQUID_VLA(liquid_float_complex, buf_orig, k);
+    LIQUID_VLA(liquid_float_complex, buf_copy, k);
     msequence ms = msequence_create_default(7);
 
     // run original object
@@ -132,7 +133,7 @@ void autotest_gmskmod_copy()
         gmskmod_modulate(mod_orig, s, buf_orig);
         gmskmod_modulate(mod_copy, s, buf_copy);
         // check result
-        CONTEND_SAME_DATA(buf_orig, buf_copy, k*sizeof(float complex));
+        CONTEND_SAME_DATA(buf_orig, buf_copy, k*sizeof(liquid_float_complex));
     }
 
     // clean it up
@@ -153,7 +154,7 @@ void autotest_gmskdem_copy()
     gmskdem dem_orig = gmskdem_create(k, m, bt);
 
     unsigned int num_symbols = 16;
-    float complex buf[k];
+    LIQUID_VLA(liquid_float_complex, buf, k);
     unsigned int  sym_orig;
     unsigned int  sym_copy;
 

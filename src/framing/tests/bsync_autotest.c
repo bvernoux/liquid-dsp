@@ -85,7 +85,7 @@ void autotest_bsync_crcf_15()
     // run tests
     //
     unsigned int i;
-    float complex rxy;
+    liquid_float_complex rxy;
 
     // fill buffer with sequence
     for (i=0; i<15; i++)
@@ -129,7 +129,7 @@ void xautotest_bsync_crcf_phase_15()
     // run tests
     //
     unsigned int i;
-    float complex rxy;
+    liquid_float_complex rxy;
 
     // fill buffer with sequence
     for (i=0; i<15; i++)

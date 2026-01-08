@@ -23,6 +23,7 @@
 #include <assert.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 //
 // AUTOTEST: validate analysis correctness
@@ -46,7 +47,7 @@ void autotest_firpfbch_crcf_analysis()
     //        For the sake of consistency, use pseudo-random values
     //        chosen from m-sequences
     unsigned int h_len = p*num_channels;
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     msequence ms = msequence_create_default(6);
     for (i=0; i<h_len; i++)
         h[i] = (float)msequence_generate_symbol(ms, 2) - 1.5f; // (-1.5, -0.5, 0.5, 1.5)
@@ -59,9 +60,9 @@ void autotest_firpfbch_crcf_analysis()
     firfilt_crcf f = firfilt_crcf_create(h, h_len);
 
     // allocate memory for arrays
-    float complex y[num_samples];                   // time-domain input
-    float complex Y0[num_symbols][num_channels];    // channelized output
-    float complex Y1[num_symbols][num_channels];    // channelized output
+    LIQUID_VLA(liquid_float_complex, y, num_samples);                   // time-domain input
+    LIQUID_VLA(liquid_float_complex, Y0, num_symbols * num_channels);   // channelized output (flattened)
+    LIQUID_VLA(liquid_float_complex, Y1, num_symbols * num_channels);   // channelized output (flattened)
 
     // generate input sequence (complex noise)
     ms = msequence_create_default(7);
@@ -76,7 +77,7 @@ void autotest_firpfbch_crcf_analysis()
     //
 
     for (i=0; i<num_symbols; i++)
-        firpfbch_crcf_analyzer_execute(q, &y[i*num_channels], &Y0[i][0]);
+        firpfbch_crcf_analyzer_execute(q, &y[i*num_channels], &Y0[i*num_channels]);
 
 
     // 
@@ -103,7 +104,7 @@ void autotest_firpfbch_crcf_analysis()
             // compute output at the appropriate sample time
             assert(n<num_symbols);
             if ( ((j+1)%num_channels)==0 ) {
-                firfilt_crcf_execute(f, &Y1[n][i]);
+                firfilt_crcf_execute(f, &Y1[n*num_channels + i]);
                 n++;
             }
         }
@@ -122,7 +123,7 @@ void autotest_firpfbch_crcf_analysis()
         for (i=0; i<num_symbols; i++) {
             printf("%3u: ", i);
             for (j=0; j<num_channels; j++) {
-                printf("  %8.5f+j%8.5f, ", crealf(Y0[i][j]), cimagf(Y0[i][j]));
+                printf("  %8.5f+j%8.5f, ", crealf(Y0[i*num_channels + j]), cimagf(Y0[i*num_channels + j]));
             }
             printf("\n");
         }
@@ -133,7 +134,7 @@ void autotest_firpfbch_crcf_analysis()
         for (i=0; i<num_symbols; i++) {
             printf("%3u: ", i);
             for (j=0; j<num_channels; j++) {
-                printf("  %8.5f+j%8.5f, ", crealf(Y1[i][j]), cimagf(Y1[i][j]));
+                printf("  %8.5f+j%8.5f, ", crealf(Y1[i*num_channels + j]), cimagf(Y1[i*num_channels + j]));
             }
             printf("\n");
         }
@@ -142,8 +143,8 @@ void autotest_firpfbch_crcf_analysis()
     // compare results
     for (i=0; i<num_symbols; i++) {
         for (j=0; j<num_channels; j++) {
-            CONTEND_DELTA( crealf(Y0[i][j]), crealf(Y1[i][j]), tol );
-            CONTEND_DELTA( cimagf(Y0[i][j]), cimagf(Y1[i][j]), tol );
+            CONTEND_DELTA( crealf(Y0[i*num_channels + j]), crealf(Y1[i*num_channels + j]), tol );
+            CONTEND_DELTA( cimagf(Y0[i*num_channels + j]), cimagf(Y1[i*num_channels + j]), tol );
         }
     }
 

@@ -42,7 +42,7 @@ void autotest_lshift() {
     unsigned char output_test_3[4] = {0xAA, 0x00, 0x00, 0x00};
     unsigned char output_test_4[4] = {0x00, 0x00, 0x00, 0x00};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
 
     // 
     // run tests
@@ -81,7 +81,7 @@ void autotest_rshift() {
     unsigned char output_test_3[4] = {0x00, 0x00, 0x00, 0x81};
     unsigned char output_test_4[4] = {0x00, 0x00, 0x00, 0x00};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
 
     // 
     // run tests
@@ -120,7 +120,7 @@ void autotest_lcircshift() {
     unsigned char output_test_3[4] = {0xAA, 0x81, 0xEF, 0x5F};
     unsigned char output_test_4[4] = {0x81, 0xEF, 0x5F, 0xAA};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
 
     // 
     // run tests
@@ -159,7 +159,7 @@ void autotest_rcircshift() {
     unsigned char output_test_3[4] = {0xEF, 0x5F, 0xAA, 0x81};
     unsigned char output_test_4[4] = {0x81, 0xEF, 0x5F, 0xAA};
 
-    unsigned char output[4];
+    LIQUID_VLA(unsigned char, output, 4);
 
     // 
     // run tests

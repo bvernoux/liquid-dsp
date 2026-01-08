@@ -31,6 +31,7 @@
 #include <immintrin.h>
 
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 #define DEBUG_DOTPROD_RRRF_SSE   0
 
@@ -223,7 +224,7 @@ int dotprod_rrrf_execute_sse(dotprod_rrrf _q,
     }
 
     // aligned output array
-    float w[4] __attribute__((aligned(16)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 4, 16);
 
 #if HAVE_SSE3
     // fold down into single value
@@ -294,7 +295,7 @@ int dotprod_rrrf_execute_sse4(dotprod_rrrf _q,
     }
 
     // aligned output array
-    float w[4] __attribute__((aligned(16)));
+    LIQUID_DEFINE_ALIGNED_ARRAY(float, w, 4, 16);
 
 #if HAVE_SSE3
     // SSE3: fold down to single value using _mm_hadd_ps()

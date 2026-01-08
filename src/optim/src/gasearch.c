@@ -65,15 +65,15 @@ gasearch gasearch_create_advanced(gasearch_utility _utility,
 {
     // validate input
     if (_utility == NULL)
-        return liquid_error_config("gasearch_create(), utility function cannot be NULL")
+        return liquid_error_config_ptr(gasearch, "gasearch_create(), utility function cannot be NULL");
     if (_parent == NULL)
-        return liquid_error_config("gasearch_create(), parent cannot be NULL")
+        return liquid_error_config_ptr(gasearch, "gasearch_create(), parent cannot be NULL");
     if (_population_size < 2)
-        return liquid_error_config("gasearch_create(), population size exceeds minimum");
+        return liquid_error_config_ptr(gasearch, "gasearch_create(), population size exceeds minimum");
     if (_population_size > LIQUID_GA_SEARCH_MAX_POPULATION_SIZE)
-        return liquid_error_config("gasearch_create(), population size exceeds maximum (%u)",LIQUID_GA_SEARCH_MAX_POPULATION_SIZE);
+        return liquid_error_config_ptr(gasearch, "gasearch_create(), population size exceeds maximum (%u)",LIQUID_GA_SEARCH_MAX_POPULATION_SIZE);
     if (_mutation_rate < 0.0f || _mutation_rate > 1.0f)
-        return liquid_error_config("gasearch_create(), mutation rate must be in [0,1]");
+        return liquid_error_config_ptr(gasearch, "gasearch_create(), mutation rate must be in [0,1]");
 
     // create object and initialize values
     gasearch ga = (gasearch) malloc( sizeof(struct gasearch_s) );

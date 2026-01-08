@@ -31,8 +31,8 @@
 //  _x      :   fft input array
 //  _test   :   expected fft output
 //  _n      :   fft size
-void fft_test(float complex * _x,
-              float complex * _test,
+void fft_test(liquid_float_complex * _x,
+              liquid_float_complex * _test,
               unsigned int    _n);
 
 // 
@@ -40,106 +40,106 @@ void fft_test(float complex * _x,
 //
 
 //
-extern float complex fft_test_x2[];
-extern float complex fft_test_y2[];
+extern liquid_float_complex fft_test_x2[];
+extern liquid_float_complex fft_test_y2[];
 
-extern float complex fft_test_x3[];
-extern float complex fft_test_y3[];
+extern liquid_float_complex fft_test_x3[];
+extern liquid_float_complex fft_test_y3[];
 
-extern float complex fft_test_x4[];
-extern float complex fft_test_y4[];
+extern liquid_float_complex fft_test_x4[];
+extern liquid_float_complex fft_test_y4[];
 
-extern float complex fft_test_x5[];
-extern float complex fft_test_y5[];
+extern liquid_float_complex fft_test_x5[];
+extern liquid_float_complex fft_test_y5[];
 
-extern float complex fft_test_x6[];
-extern float complex fft_test_y6[];
+extern liquid_float_complex fft_test_x6[];
+extern liquid_float_complex fft_test_y6[];
 
-extern float complex fft_test_x7[];
-extern float complex fft_test_y7[];
+extern liquid_float_complex fft_test_x7[];
+extern liquid_float_complex fft_test_y7[];
 
-extern float complex fft_test_x8[];
-extern float complex fft_test_y8[];
+extern liquid_float_complex fft_test_x8[];
+extern liquid_float_complex fft_test_y8[];
 
-extern float complex fft_test_x9[];
-extern float complex fft_test_y9[];
-
-//
-extern float complex fft_test_x10[];
-extern float complex fft_test_y10[];
-
-extern float complex fft_test_x16[];
-extern float complex fft_test_y16[];
-
-extern float complex fft_test_x17[];
-extern float complex fft_test_y17[];
-
-extern float complex fft_test_x20[];
-extern float complex fft_test_y20[];
-
-extern float complex fft_test_x21[];
-extern float complex fft_test_y21[];
-
-extern float complex fft_test_x22[];
-extern float complex fft_test_y22[];
-
-extern float complex fft_test_x24[];
-extern float complex fft_test_y24[];
-
-extern float complex fft_test_x26[];
-extern float complex fft_test_y26[];
-
-extern float complex fft_test_x30[];
-extern float complex fft_test_y30[];
-
-extern float complex fft_test_x32[];
-extern float complex fft_test_y32[];
-
-extern float complex fft_test_x35[];
-extern float complex fft_test_y35[];
-
-extern float complex fft_test_x36[];
-extern float complex fft_test_y36[];
-
-extern float complex fft_test_x43[];
-extern float complex fft_test_y43[];
-
-extern float complex fft_test_x48[];
-extern float complex fft_test_y48[];
-
-extern float complex fft_test_x63[];
-extern float complex fft_test_y63[];
-
-extern float complex fft_test_x64[];
-extern float complex fft_test_y64[];
-
-extern float complex fft_test_x79[];
-extern float complex fft_test_y79[];
-
-extern float complex fft_test_x92[];
-extern float complex fft_test_y92[];
-
-extern float complex fft_test_x96[];
-extern float complex fft_test_y96[];
+extern liquid_float_complex fft_test_x9[];
+extern liquid_float_complex fft_test_y9[];
 
 //
-extern float complex fft_test_x120[];
-extern float complex fft_test_y120[];
+extern liquid_float_complex fft_test_x10[];
+extern liquid_float_complex fft_test_y10[];
 
-extern float complex fft_test_x130[];
-extern float complex fft_test_y130[];
+extern liquid_float_complex fft_test_x16[];
+extern liquid_float_complex fft_test_y16[];
 
-extern float complex fft_test_x157[];
-extern float complex fft_test_y157[];
+extern liquid_float_complex fft_test_x17[];
+extern liquid_float_complex fft_test_y17[];
 
-extern float complex fft_test_x192[];
-extern float complex fft_test_y192[];
+extern liquid_float_complex fft_test_x20[];
+extern liquid_float_complex fft_test_y20[];
 
-extern float complex fft_test_x317[];
-extern float complex fft_test_y317[];
+extern liquid_float_complex fft_test_x21[];
+extern liquid_float_complex fft_test_y21[];
 
-extern float complex fft_test_x509[];
-extern float complex fft_test_y509[];
+extern liquid_float_complex fft_test_x22[];
+extern liquid_float_complex fft_test_y22[];
+
+extern liquid_float_complex fft_test_x24[];
+extern liquid_float_complex fft_test_y24[];
+
+extern liquid_float_complex fft_test_x26[];
+extern liquid_float_complex fft_test_y26[];
+
+extern liquid_float_complex fft_test_x30[];
+extern liquid_float_complex fft_test_y30[];
+
+extern liquid_float_complex fft_test_x32[];
+extern liquid_float_complex fft_test_y32[];
+
+extern liquid_float_complex fft_test_x35[];
+extern liquid_float_complex fft_test_y35[];
+
+extern liquid_float_complex fft_test_x36[];
+extern liquid_float_complex fft_test_y36[];
+
+extern liquid_float_complex fft_test_x43[];
+extern liquid_float_complex fft_test_y43[];
+
+extern liquid_float_complex fft_test_x48[];
+extern liquid_float_complex fft_test_y48[];
+
+extern liquid_float_complex fft_test_x63[];
+extern liquid_float_complex fft_test_y63[];
+
+extern liquid_float_complex fft_test_x64[];
+extern liquid_float_complex fft_test_y64[];
+
+extern liquid_float_complex fft_test_x79[];
+extern liquid_float_complex fft_test_y79[];
+
+extern liquid_float_complex fft_test_x92[];
+extern liquid_float_complex fft_test_y92[];
+
+extern liquid_float_complex fft_test_x96[];
+extern liquid_float_complex fft_test_y96[];
+
+//
+extern liquid_float_complex fft_test_x120[];
+extern liquid_float_complex fft_test_y120[];
+
+extern liquid_float_complex fft_test_x130[];
+extern liquid_float_complex fft_test_y130[];
+
+extern liquid_float_complex fft_test_x157[];
+extern liquid_float_complex fft_test_y157[];
+
+extern liquid_float_complex fft_test_x192[];
+extern liquid_float_complex fft_test_y192[];
+
+extern liquid_float_complex fft_test_x317[];
+extern liquid_float_complex fft_test_y317[];
+
+extern liquid_float_complex fft_test_x509[];
+extern liquid_float_complex fft_test_y509[];
 
 // 8-point real even/odd dft data
 extern float fftdata_r2r_x8[];

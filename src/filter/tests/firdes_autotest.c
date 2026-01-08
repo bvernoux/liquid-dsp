@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.internal.h"
+#include "liquid_vla.h"
 
 void autotest_liquid_firdes_rcos() {
 
@@ -47,7 +48,7 @@ void autotest_liquid_firdes_rcos() {
     };
 
     // Create filter
-    float h[13];
+    LIQUID_VLA(float, h, 13);
     liquid_firdes_rcos(k,m,beta,offset,h);
 
     // Ensure data are equal
@@ -80,7 +81,7 @@ void autotest_liquid_firdes_rrcos() {
        -3.311577E-02}; 
 
     // Create filter
-    float h[13];
+    LIQUID_VLA(float, h, 13);
     liquid_firdes_rrcos(k,m,beta,offset,h);
 
     // Ensure data are equal
@@ -98,8 +99,8 @@ void test_harness_matched_filter(int          _type,
 {
     // Create filter
     unsigned int h_len = 2*_k*_m+1;
-    float h[h_len];
-    liquid_firdes_prototype(_type,_k,_m,_beta,0.0f,h);
+    LIQUID_VLA(float, h, h_len);
+    liquid_firdes_prototype((liquid_firfilt_type)_type,_k,_m,_beta,0.0f,h);
 
     // scale by samples per symbol
     liquid_vectorf_mulscalar(h, h_len, 1.0f/(float)_k, h);
@@ -115,11 +116,11 @@ void test_harness_matched_filter(int          _type,
 
     // verify spectrum response
     autotest_psd_s regions[] = {
-      {.fmin=-0.50, .fmax=-0.35f, .pmin= 0, .pmax=_tol_as, .test_lo=0, .test_hi=1},
-      {.fmin=-0.20, .fmax= 0.20f, .pmin=-1, .pmax=     +1, .test_lo=1, .test_hi=1},
-      {.fmin= 0.35, .fmax= 0.50f, .pmin= 0, .pmax=_tol_as, .test_lo=0, .test_hi=1},
+      {.fmin=-0.50, .fmax=-0.35f, .pmin=0.0f, .pmax=_tol_as, .test_lo=0, .test_hi=1},
+      {.fmin=-0.20, .fmax= 0.20f, .pmin=-1.0f, .pmax=     +1, .test_lo=1, .test_hi=1},
+      {.fmin= 0.35, .fmax= 0.50f, .pmin=0.0f, .pmax=_tol_as, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/firdes_%s.m", liquid_firfilt_type_str[_type][0]);
     liquid_autotest_validate_psd_signalf(h, h_len, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -138,13 +139,13 @@ void autotest_liquid_firdes_dcblock()
 
     // Create filter
     unsigned int h_len = 2*m+1;
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     liquid_firdes_notch(m,0,as,h);
 
     // compute filter response and evaluate at several frequencies
     unsigned int  nfft = 1200;
-    float complex buf_time[nfft];
-    float complex buf_freq[nfft];
+    LIQUID_VLA(liquid_float_complex, buf_time, nfft);
+    LIQUID_VLA(liquid_float_complex, buf_freq, nfft);
     unsigned int i;
     for (i=0; i<nfft; i++)
         buf_time[i] = i < h_len ? h[i] : 0;
@@ -167,13 +168,13 @@ void autotest_liquid_firdes_notch()
 
     // Create filter
     unsigned int h_len = 2*m+1;
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     liquid_firdes_notch(m,f0,as,h);
 
     // compute filter response and evaluate at several frequencies
     unsigned int  nfft = 1200;
-    float complex buf_time[nfft];
-    float complex buf_freq[nfft];
+    LIQUID_VLA(liquid_float_complex, buf_time, nfft);
+    LIQUID_VLA(liquid_float_complex, buf_freq, nfft);
     unsigned int i;
     for (i=0; i<nfft; i++)
         buf_time[i] = i < h_len ? h[i] : 0;
@@ -241,7 +242,7 @@ void autotest_liquid_firdes_config()
 
     unsigned int m     =  4;
     unsigned int h_len = 2*m+1;
-    float        h[h_len];
+    LIQUID_VLA(float, h, h_len);
     int          wtype = LIQUID_WINDOW_HAMMING;
     CONTEND_EQUALITY(liquid_firdes_windowf(wtype, h_len, 0.2f, 0, h), LIQUID_OK      );
     CONTEND_EQUALITY(liquid_firdes_windowf(wtype,     0, 0.2f, 0, h), LIQUID_EICONFIG);
@@ -307,8 +308,8 @@ void testbench_firdes_prototype(const char * _type,
 {
     // design filter
     unsigned int h_len = 2*_k*_m+1;
-    float        h[h_len];
-    liquid_firfilt_type type = liquid_getopt_str2firfilt(_type);
+    LIQUID_VLA(float, h, h_len);
+    liquid_firfilt_type type = (liquid_firfilt_type)liquid_getopt_str2firfilt(_type);
     if (type == LIQUID_FIRFILT_UNKNOWN) {
         AUTOTEST_FAIL("invalid configuration");
         return;
@@ -323,11 +324,11 @@ void testbench_firdes_prototype(const char * _type,
     float f0 = 0.45*bw*(1-_beta);
     float f1 = 0.55*bw*(1+_beta);
     autotest_psd_s regions[] = {
-      {.fmin=-0.5,.fmax=-f1, .pmin= 0, .pmax=-_as, .test_lo=0, .test_hi=1},
-      {.fmin=-f0, .fmax= f0, .pmin=-1, .pmax=+1,   .test_lo=1, .test_hi=1},
-      {.fmin= f1, .fmax=+0.5,.pmin= 0, .pmax=-_as, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5,.fmax=-f1, .pmin=0.0f, .pmax=-_as, .test_lo=0, .test_hi=1},
+      {.fmin=-f0, .fmax= f0, .pmin=-1.0f, .pmax=1.0f,   .test_lo=1, .test_hi=1},
+      {.fmin= f1, .fmax=+0.5,.pmin=0.0f, .pmax=-_as, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/firdes_prototype_%s.m", _type);
     liquid_autotest_validate_psd_signalf(h, h_len, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -357,16 +358,16 @@ void autotest_firdes_doppler()
     float        K      = 10.0f; // Rice fading factor
     float        theta  = 0.0f;  // LoS component angle of arrival
     unsigned int h_len  = 161;   // filter length
-    float        h[h_len];
+    LIQUID_VLA(float, h, h_len);
     liquid_firdes_doppler(h_len,fd,K,theta,h);
 
     // verify resulting spectrum
     autotest_psd_s regions[] = {
-      {.fmin=-0.5,   .fmax=-0.25,  .pmin= 0, .pmax= 0, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5,   .fmax=-0.25,  .pmin=0.0f, .pmax=0.0f, .test_lo=0, .test_hi=1},
       {.fmin=-0.205, .fmax=-0.195, .pmin=30, .pmax=40, .test_lo=1, .test_hi=1},
       {.fmin=-0.14,  .fmax=+0.14,  .pmin= 6, .pmax=12, .test_lo=1, .test_hi=1},
       {.fmin=+0.195, .fmax=+0.205, .pmin=30, .pmax=40, .test_lo=1, .test_hi=1},
-      {.fmin= 0.25,  .fmax=+0.5,   .pmin= 0, .pmax= 0, .test_lo=0, .test_hi=1},
+      {.fmin= 0.25,  .fmax=+0.5,   .pmin=0.0f, .pmax=0.0f, .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signalf(h, h_len, regions, 5,
         liquid_autotest_verbose ? "autotest/logs/firdes_doppler.m" : NULL);
@@ -377,12 +378,13 @@ void autotest_liquid_freqrespf()
 {
     // design filter
     unsigned int h_len = 41;
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     liquid_firdes_kaiser(h_len, 0.27f, 80.0f, 0.3f, h);
 
     // compute frequency response with FFT
     unsigned int i, nfft = 400;
-    float complex buf_time[nfft], buf_freq[nfft];
+    LIQUID_VLA(liquid_float_complex, buf_time, nfft);
+    LIQUID_VLA(liquid_float_complex, buf_freq, nfft);
     for (i=0; i<nfft; i++)
         buf_time[i] = i < h_len ? h[i] : 0.0f;
     fft_run(nfft, buf_time, buf_freq, LIQUID_FFT_FORWARD, 0);
@@ -391,7 +393,7 @@ void autotest_liquid_freqrespf()
     float tol = 1e-5f;
     for (i=0; i<nfft; i++) {
         float fc = (float)i/(float)nfft + (i >= nfft/2 ? -1.0f : 0.0f);
-        float complex H;
+        liquid_float_complex H;
         liquid_freqrespf(h, h_len, fc, &H);
 
         CONTEND_DELTA(crealf(buf_freq[i]), crealf(H), tol);
@@ -404,15 +406,16 @@ void autotest_liquid_freqrespcf()
 {
     // design filter and apply complex phasor
     unsigned int i, h_len = 41;
-    float hf[h_len];
+    LIQUID_VLA(float, hf, h_len);
     liquid_firdes_kaiser(h_len, 0.27f, 80.0f, 0.3f, hf);
-    float complex h[h_len];
+    LIQUID_VLA(liquid_float_complex, h, h_len);
     for (i=0; i<h_len; i++)
         h[i] = hf[i] * cexpf(_Complex_I*0.1f*(float)(i*i));
 
     // compute frequency response with FFT
     unsigned int  nfft = 400;
-    float complex buf_time[nfft], buf_freq[nfft];
+    LIQUID_VLA(liquid_float_complex, buf_time, nfft);
+    LIQUID_VLA(liquid_float_complex, buf_freq, nfft);
     for (i=0; i<nfft; i++)
         buf_time[i] = i < h_len ? h[i] : 0.0f;
     fft_run(nfft, buf_time, buf_freq, LIQUID_FFT_FORWARD, 0);
@@ -421,7 +424,7 @@ void autotest_liquid_freqrespcf()
     float tol = 1e-5f;
     for (i=0; i<nfft; i++) {
         float fc = (float)i/(float)nfft + (i >= nfft/2 ? -1.0f : 0.0f);
-        float complex H;
+        liquid_float_complex H;
         liquid_freqrespcf(h, h_len, fc, &H);
 
         CONTEND_DELTA(crealf(buf_freq[i]), crealf(H), tol);

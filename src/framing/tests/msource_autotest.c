@@ -25,7 +25,7 @@
 
 // user-defined callback; generate tones
 int callback_msourcecf_autotest(void *          _userdata,
-                                float complex * _v,
+                                liquid_float_complex * _v,
                                 unsigned int    _n)
 {
     unsigned int * counter = (unsigned int*)_userdata;
@@ -60,7 +60,7 @@ void autotest_msourcecf_tone()
 
     // generate samples
     unsigned int buf_len = 1024;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     while (msourcecf_get_num_samples(gen) < num_samples) {
         // write samples to buffer
         msourcecf_write_samples(gen, buf, buf_len);
@@ -70,7 +70,7 @@ void autotest_msourcecf_tone()
     }
 
     // compute power spectral density output
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(periodogram, psd);
 
     // destroy objects
@@ -117,7 +117,7 @@ void autotest_msourcecf_chirp()
 
     // generate samples
     unsigned int buf_len = 1024;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     while (msourcecf_get_num_samples(gen) < num_samples) {
         // write samples to buffer
         msourcecf_write_samples(gen, buf, buf_len);
@@ -127,7 +127,7 @@ void autotest_msourcecf_chirp()
     }
 
     // compute power spectral density output
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(periodogram, psd);
 
     // destroy objects
@@ -162,7 +162,7 @@ void autotest_msourcecf_aggregate()
     spgramcf periodogram = spgramcf_create_default(nfft);
 
     unsigned int buf_len = 1024;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
 
     // create multi-signal source generator
     msourcecf gen = msourcecf_create_default();
@@ -195,7 +195,7 @@ void autotest_msourcecf_aggregate()
     printf("total samples: %u\n", total_samples);
 
     // compute power spectral density output
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(periodogram, psd);
 
     // destroy objects
@@ -239,7 +239,7 @@ void autotest_msourcecf_aggregate()
       {.fmin= 0.4370,.fmax=+0.4380, .pmin=-20.0, .pmax= +0.0, .test_lo=1, .test_hi=1},
       {.fmin= 0.4555,.fmax=+0.4565, .pmin=-20.0, .pmax= +0.0, .test_lo=1, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/msourcecf_aggregate_autotest.m");
     liquid_autotest_validate_spectrum(psd, nfft, regions, 7+7+1+6+8,
         liquid_autotest_verbose ? filename : NULL);
@@ -289,7 +289,7 @@ void autotest_msourcecf_config()
 
     // assert buffer is zeros (only GMSK signal present and it's disabled)
     unsigned int buf_len = 1024;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     msourcecf_write_samples(q, buf, buf_len);
     CONTEND_EQUALITY(0.0f, liquid_sumsqcf(buf, buf_len));
 
@@ -345,7 +345,7 @@ void autotest_msourcecf_accessor()
 
     // assert buffer is zeros
     unsigned int buf_len = 1024;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     msourcecf_write_samples(q, buf, buf_len);
     CONTEND_EQUALITY(0.0f, liquid_sumsqcf(buf, buf_len));
 
@@ -363,7 +363,7 @@ void autotest_msourcecf_accessor()
         spgramcf_write(periodogram, buf, buf_len);
     }
     // compute power spectral density output
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(periodogram, psd);
 
     // destroy objects
@@ -402,8 +402,8 @@ void autotest_msourcecf_copy()
     spgramcf periodogram_copy = spgramcf_create_default(nfft);
 
     unsigned int buf_len = 1024;
-    float complex buf_orig[buf_len];
-    float complex buf_copy[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf_orig, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_copy, buf_len);
 
     // create multi-signal source generator
     msourcecf gen_orig = msourcecf_create_default();
@@ -438,8 +438,8 @@ void autotest_msourcecf_copy()
     printf("total samples: %u\n", total_samples);
 
     // compute power spectral density output
-    float psd_orig[nfft];
-    float psd_copy[nfft];
+    LIQUID_VLA(float, psd_orig, nfft);
+    LIQUID_VLA(float, psd_copy, nfft);
     spgramcf_get_psd(periodogram_orig, psd_orig);
     spgramcf_get_psd(periodogram_copy, psd_copy);
 

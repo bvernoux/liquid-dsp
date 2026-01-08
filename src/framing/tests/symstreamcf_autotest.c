@@ -44,7 +44,7 @@ void testbench_symstreamcf_psd(unsigned int _k,
     spgramcf periodogram = spgramcf_create_default(nfft);
 
     unsigned int buf_len = 1337;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     unsigned int n = 0;
     while (n < num_samples) {
         // fill buffer
@@ -56,7 +56,7 @@ void testbench_symstreamcf_psd(unsigned int _k,
     }
 
     // compute power spectral density output
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(periodogram, psd);
 
     // destroy objects
@@ -71,7 +71,7 @@ void testbench_symstreamcf_psd(unsigned int _k,
       {.fmin=-f0,  .fmax= f0,  .pmin= -1.0, .pmax=  1.0, .test_lo=1, .test_hi=1},
       {.fmin= f1,  .fmax= 0.5, .pmin=  0.0, .pmax=-80.0, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/symstreamcf_psd_k%u_m%u_b%.3u_autotest.m",
             _k, _m, (int)(_beta*100));
     liquid_autotest_validate_spectrum(psd, nfft, regions, 3,
@@ -92,8 +92,8 @@ void autotest_symstreamcf_copy()
 
     // allocate memory for buffers
     unsigned int buf_len = 1337;
-    float complex buf_orig[buf_len];
-    float complex buf_copy[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf_orig, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_copy, buf_len);
 
     // generate some samples
     symstreamcf_write_samples(gen_orig, buf_orig, buf_len);
@@ -107,7 +107,7 @@ void autotest_symstreamcf_copy()
 
     // compare result
     // NOTE: this will fail as they have different symbol generators
-    //CONTEND_SAME_DATA(buf_orig, buf_copy, buf_len*sizeof(float complex));
+    //CONTEND_SAME_DATA(buf_orig, buf_copy, buf_len*sizeof(liquid_float_complex));
     AUTOTEST_WARN("symstreamcf_copy results ignored until common PRNG is used");
 
     // destroy objects

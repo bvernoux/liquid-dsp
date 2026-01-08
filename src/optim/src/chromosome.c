@@ -40,10 +40,10 @@ chromosome chromosome_create(unsigned int * _bits_per_trait,
     // validate input
     unsigned int i;
     if (_num_traits < 1)
-        return liquid_error_config("chromosome_create(), must have at least one trait");
+        return liquid_error_config_ptr(chromosome, "chromosome_create(), must have at least one trait");
     for (i=0; i<_num_traits; i++) {
         if (_bits_per_trait[i] > LIQUID_CHROMOSOME_MAX_SIZE)
-            return liquid_error_config("chromosome_create(), bits/trait cannot exceed %u", LIQUID_CHROMOSOME_MAX_SIZE);
+            return liquid_error_config_ptr(chromosome, "chromosome_create(), bits/trait cannot exceed %u", LIQUID_CHROMOSOME_MAX_SIZE);
     }
 
     chromosome q;
@@ -77,9 +77,9 @@ chromosome chromosome_create_basic(unsigned int _num_traits,
 {
     // validate input
     if (_num_traits == 0)
-        return liquid_error_config("chromosome_create_basic(), must have at least one trait");
+        return liquid_error_config_ptr(chromosome, "chromosome_create_basic(), must have at least one trait");
     if (_bits_per_trait == 0 || _bits_per_trait > 64)
-        return liquid_error_config("chromosome_create_basic(), bits per trait out of range");
+        return liquid_error_config_ptr(chromosome, "chromosome_create_basic(), bits per trait out of range");
 
     unsigned int * bpt = (unsigned int *) malloc(_num_traits*sizeof(unsigned int));
     unsigned int i;

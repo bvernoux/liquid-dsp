@@ -54,7 +54,7 @@ void autotest_flexframesync()
     
     // initialize header and payload
     unsigned char header[14] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
-    unsigned char payload[_payload_len];
+    LIQUID_VLA(unsigned char, payload, _payload_len);
     for (i=0; i<_payload_len; i++)
         payload[i] = rand() & 0xff;
     
@@ -65,7 +65,7 @@ void autotest_flexframesync()
 
     // generate the frame
     int frame_complete = 0;
-    float complex buf[2];
+    LIQUID_VLA(liquid_float_complex, buf, 2);
     while (!frame_complete) {
         // write samples to buffer
         frame_complete = flexframegen_write_samples(fg, buf, 2);

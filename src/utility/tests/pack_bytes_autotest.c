@@ -80,7 +80,7 @@ void autotest_unpack_array() {
         0x04    //     10[0] <- last bit is implied
     };
 
-    unsigned char output[9];
+    LIQUID_VLA(unsigned char, output, 9);
 
     unsigned int k=0;
     unsigned int i;
@@ -97,8 +97,8 @@ void autotest_unpack_array() {
 //
 void autotest_repack_array() {
     unsigned int n=512;     // input/output array size
-    unsigned char src[n];   // original data array
-    unsigned char dst[n];   // repacked data array
+    LIQUID_VLA(unsigned char, src, n);   // original data array
+    LIQUID_VLA(unsigned char, dst, n);   // repacked data array
 
     unsigned int i;
     // initialize input/output arrays
@@ -128,7 +128,7 @@ void autotest_repack_array() {
 }
 
 void autotest_pack_bytes_01() {
-    unsigned char output[8];
+    LIQUID_VLA(unsigned char, output, 8);
     unsigned int N;
     
     unsigned char input[36] = {
@@ -171,7 +171,7 @@ void autotest_pack_bytes_01() {
 void autotest_unpack_bytes_01() {
     unsigned char input[5] = {0x00, 0x01, 0xFF, 0x0F, 0xAA};
     
-    unsigned char output[64];
+    LIQUID_VLA(unsigned char, output, 64);
     unsigned int N;
 
     unsigned char output_test[40] = {
@@ -210,7 +210,7 @@ void autotest_repack_bytes_01() {
         0x03    // 11
     };
 
-    unsigned char output[6];
+    LIQUID_VLA(unsigned char, output, 6);
     unsigned int N;
 
     liquid_repack_bytes( input, 3, 4, output, 2, 6, &N );
@@ -234,7 +234,7 @@ void autotest_repack_bytes_02() {
         0x04    // 100
     };
 
-    unsigned char output[5];
+    LIQUID_VLA(unsigned char, output, 5);
     unsigned int N;
 
     liquid_repack_bytes( input, 5, 3, output, 3, 5, &N );
@@ -258,7 +258,7 @@ void autotest_repack_bytes_03() {
         0x04    // 00100
     };
 
-    unsigned char output[3];
+    LIQUID_VLA(unsigned char, output, 3);
     unsigned int N;
 
     liquid_repack_bytes( input, 3, 5, output, 5, 3, &N );
@@ -282,7 +282,7 @@ void autotest_repack_bytes_04_uneven() {
         0x02    // 10
     };
 
-    unsigned char output[5];
+    LIQUID_VLA(unsigned char, output, 5);
     unsigned int N;
 
     liquid_repack_bytes( input, 3, 3, output, 2, 5, &N );

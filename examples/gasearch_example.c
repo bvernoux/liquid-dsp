@@ -1,4 +1,4 @@
-char __docstr__[] =
+const char __docstr__[] =
 "Example demonstrating performance of GA search algorithm for finding basic"
 " function peak";
 
@@ -7,6 +7,7 @@ char __docstr__[] =
 #include <math.h>
 
 #include "liquid.h"
+#include "liquid_vla.h"
 #include "liquid.argparse.h"
 
 // peak callback function; value nearest {p, p, p, ...} where p = 1/sqrt(2)

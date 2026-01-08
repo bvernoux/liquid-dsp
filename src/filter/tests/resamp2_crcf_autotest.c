@@ -36,9 +36,9 @@ void autotest_resamp2_analysis()
     unsigned int i;
 
     // allocate memory for data arrays
-    float complex x[2*n+2*m+1]; // input signal (with delay)
-    float complex y0[n];        // low-pass output
-    float complex y1[n];        // high-pass output
+    LIQUID_VLA(liquid_float_complex, x, 2*n+2*m+1); // input signal (with delay)
+    LIQUID_VLA(liquid_float_complex, y0, n);        // low-pass output
+    LIQUID_VLA(liquid_float_complex, y1, n);        // high-pass output
 
     // generate the baseband signal
     for (i=0; i<2*n+2*m+1; i++)
@@ -49,7 +49,7 @@ void autotest_resamp2_analysis()
     resamp2_crcf q = resamp2_crcf_create(m,0,as);
 
     // run half-band decimation
-    float complex y_hat[2];
+    LIQUID_VLA(liquid_float_complex, y_hat, 2);
     for (i=0; i<n; i++) {
         resamp2_crcf_analyzer_execute(q, &x[2*i], y_hat);
         y0[i] = y_hat[0];
@@ -108,9 +108,9 @@ void autotest_resamp2_synthesis()
     unsigned int i;
 
     // allocate memory for data arrays
-    float complex x0[n+2*m+1];  // input signal (with delay)
-    float complex x1[n+2*m+1];  // input signal (with delay)
-    float complex y[2*n];       // synthesized output
+    LIQUID_VLA(liquid_float_complex, x0, n+2*m+1);  // input signal (with delay)
+    LIQUID_VLA(liquid_float_complex, x1, n+2*m+1);  // input signal (with delay)
+    LIQUID_VLA(liquid_float_complex, y, 2*n);       // synthesized output
 
     // generate the baseband signals
     for (i=0; i<n+2*m+1; i++) {
@@ -123,7 +123,7 @@ void autotest_resamp2_synthesis()
     resamp2_crcf q = resamp2_crcf_create(m,0,as);
 
     // run synthesis
-    float complex x_hat[2];
+    LIQUID_VLA(liquid_float_complex, x_hat, 2);
     for (i=0; i<n; i++) {
         x_hat[0] = x0[i];
         x_hat[1] = x1[i];
@@ -177,8 +177,8 @@ void testbench_resamp2_crcf_filter(unsigned int _m, float _as)
 
     // get impulse response
     unsigned int h_len = 4*_m+1;
-    float complex h_0[h_len];   // low-frequency response
-    float complex h_1[h_len];   // high-frequency response
+    LIQUID_VLA(liquid_float_complex, h_0, h_len);   // low-frequency response
+    LIQUID_VLA(liquid_float_complex, h_1, h_len);   // high-frequency response
     unsigned int i;
     for (i=0; i<h_len; i++)
         resamp2_crcf_filter_execute(q, i==0 ? 1 : 0, h_0+i, h_1+i);
@@ -191,20 +191,20 @@ void testbench_resamp2_crcf_filter(unsigned int _m, float _as)
 
     // verify low-pass frequency response
     autotest_psd_s regions_h0[] = {
-      {.fmin=-0.5,       .fmax=-0.25-ft/2, .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-0.25+ft/2, .fmax=+0.25-ft/2, .pmin=-1, .pmax=+1,       .test_lo=1, .test_hi=1},
-      {.fmin=+0.25+ft/2, .fmax=+0.5,       .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,       .fmax=-0.25f-ft/2, .pmin=0.0f, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.25f+ft/2, .fmax=+0.25f-ft/2, .pmin=-1.0f, .pmax=1.0f,       .test_lo=1, .test_hi=1},
+      {.fmin=+0.25f+ft/2, .fmax=+0.5f,       .pmin=0.0f, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/resamp2_crcf_filter_lo_m%u_as%.0f.m", _m, _as);
     liquid_autotest_validate_psd_signal(h_0, h_len, regions_h0, 3,
         liquid_autotest_verbose ? filename : NULL);
 
     // verify high-pass frequency response
     autotest_psd_s regions_h1[] = {
-      {.fmin=-0.5,       .fmax=-0.25-ft/2, .pmin=-1, .pmax=+1,       .test_lo=1, .test_hi=1},
-      {.fmin=-0.25+ft/2, .fmax=+0.25-ft/2, .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
-      {.fmin=+0.25+ft/2, .fmax=+0.5,       .pmin=-1, .pmax=+1,       .test_lo=1, .test_hi=1},
+      {.fmin=-0.5f,       .fmax=-0.25f-ft/2, .pmin=-1.0f, .pmax=1.0f,       .test_lo=1, .test_hi=1},
+      {.fmin=-0.25f+ft/2, .fmax=+0.25f-ft/2, .pmin=0.0f, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+      {.fmin=+0.25f+ft/2, .fmax=+0.5f,       .pmin=-1.0f, .pmax=1.0f,       .test_lo=1, .test_hi=1},
     };
     sprintf(filename,"autotest/logs/resamp2_crcf_filter_hi_m%u_as%.0f.m", _m, _as);
     liquid_autotest_validate_psd_signal(h_1, h_len, regions_h1, 3,
@@ -265,7 +265,7 @@ void autotest_resamp2_copy()
     resamp2_crcf qa = resamp2_crcf_create(12,0,60.0f);
 
     // run random samples through filter
-    float complex v, ya0, ya1, yb0, yb1;
+    liquid_float_complex v, ya0, ya1, yb0, yb1;
     unsigned int i, num_samples = 80;
     for (i=0; i<num_samples; i++) {
         v = randnf() + _Complex_I*randnf();
@@ -281,8 +281,8 @@ void autotest_resamp2_copy()
         resamp2_crcf_filter_execute(qa, v, &ya0, &ya1);
         resamp2_crcf_filter_execute(qb, v, &yb0, &yb1);
 
-        CONTEND_EQUALITY(ya0, yb0);
-        CONTEND_EQUALITY(ya1, yb1);
+        CONTEND_EQUALITY_COMPLEX(ya0, yb0);
+        CONTEND_EQUALITY_COMPLEX(ya1, yb1);
     }
 
     // clean up allocated objects

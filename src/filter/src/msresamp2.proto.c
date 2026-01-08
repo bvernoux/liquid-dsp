@@ -88,11 +88,11 @@ MSRESAMP2() MSRESAMP2(_create)(int          _type,
 {
     // validate input
     if (_num_stages > 16)
-        return liquid_error_config("msresamp2_%s_create(), number of stages should not exceed 16", EXTENSION_FULL);
+        return liquid_error_config_ptr(MSRESAMP2(), "msresamp2_%s_create(), number of stages should not exceed 16", EXTENSION_FULL);
     if ( _fc <= 0.0f || _fc >= 0.5f )
-        return liquid_error_config("msresamp2_%s_create(), cut-off frequency must be in (0,0.5)", EXTENSION_FULL);
+        return liquid_error_config_ptr(MSRESAMP2(), "msresamp2_%s_create(), cut-off frequency must be in (0,0.5)", EXTENSION_FULL);
     if ( _f0 != 0. )
-        return liquid_error_config("msresamp2_%s_create(), non-zero center frequency not yet supported", EXTENSION_FULL);
+        return liquid_error_config_ptr(MSRESAMP2(), "msresamp2_%s_create(), non-zero center frequency not yet supported", EXTENSION_FULL);
 
     // truncate cut-off frequency to avoid excessive filter response
     if ( _fc > 0.499f )
@@ -167,7 +167,7 @@ MSRESAMP2() MSRESAMP2(_copy)(MSRESAMP2() q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("msresamp2_%s_copy(), object cannot be NULL", EXTENSION_FULL);
+        return liquid_error_config_ptr(MSRESAMP2(), "msresamp2_%s_copy(), object cannot be NULL", EXTENSION_FULL);
 
     // create object, copy internal memory, overwrite with specific values
     MSRESAMP2() q_copy = (MSRESAMP2()) malloc(sizeof(struct MSRESAMP2(_s)));

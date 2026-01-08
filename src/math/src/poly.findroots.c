@@ -34,13 +34,24 @@
 // debug polynomial root-finding methods?
 #define LIQUID_POLY_FINDROOTS_DEBUG     0
 
+// Helper function: evaluate real polynomial at complex point using Horner's method
+static liquid_double_complex poly_val_at_complex(double *_p, unsigned int _k, liquid_double_complex _z)
+{
+    liquid_double_complex result = 0;
+    int i;
+    for (i = (int)_k - 1; i >= 0; i--) {
+        result = result * _z + _p[i];
+    }
+    return result;
+}
+
 // finds the complex roots of the polynomial using the Durand-Kerner method
 //  _p      :   polynomial array, ascending powers [size: _k x 1]
 //  _k      :   polynomials length (poly order = _k - 1)
 //  _roots  :   resulting complex roots [size: _k-1 x 1]
 int liquid_poly_findroots_durandkerner(double *         _p,
                                        unsigned int     _k,
-                                       double complex * _roots)
+                                       liquid_double_complex * _roots)
 {
     if (_k < 2)
         return liquid_error(LIQUID_EICONFIG,"liquid_poly_findroots_durandkerner(), order must be greater than 0");
@@ -49,8 +60,8 @@ int liquid_poly_findroots_durandkerner(double *         _p,
 
     unsigned int i;
     unsigned int num_roots = _k-1;
-    double r0[num_roots];
-    double r1[num_roots];
+    LIQUID_VLA(liquid_double_complex, r0, num_roots);
+    LIQUID_VLA(liquid_double_complex, r1, num_roots);
 
     // find initial magnitude
     float g     = 0.0f;
@@ -62,8 +73,8 @@ int liquid_poly_findroots_durandkerner(double *         _p,
     }
 
     // initialize roots
-    double t0 = 0.9f * (1 + gmax) * cexpf(_Complex_I*1.1526f);
-    double t  = 1.0f;
+    liquid_double_complex t0 = 0.9 * (1 + gmax) * liquid_cexp(_Complex_I*(double)1.1526);
+    liquid_double_complex t  = 1.0;
     for (i=0; i<num_roots; i++) {
         r0[i] = t;
         t *= t0;
@@ -72,8 +83,8 @@ int liquid_poly_findroots_durandkerner(double *         _p,
     unsigned int max_num_iterations = 50;
     int continue_iterating = 1;
     unsigned int j, k;
-    double f;
-    double fp;
+    liquid_double_complex f;
+    liquid_double_complex fp;
     //for (i=0; i<num_iterations; i++) {
     i = 0;
     while (continue_iterating) {
@@ -83,21 +94,21 @@ int liquid_poly_findroots_durandkerner(double *         _p,
             printf("  r[%3u] = %12.8f + j*%12.8f\n", j, creal(r0[j]), cimag(r0[j]));
 #endif
         for (j=0; j<num_roots; j++) {
-            f = poly_val(_p,_k,r0[j]);
-            fp = 1;
+            f = poly_val_at_complex(_p,_k,r0[j]);
+            fp = 1.0;
             for (k=0; k<num_roots; k++) {
                 if (k==j) continue;
-                fp *= r0[j] - r0[k];
+                fp = fp * (r0[j] - r0[k]);
             }
             r1[j] = r0[j] - f / fp;
         }
 
         // stop iterating if roots have settled
         float delta=0.0f;
-        double e;
+        liquid_double_complex e;
         for (j=0; j<num_roots; j++) {
             e = r0[j] - r1[j];
-            delta += creal(e*conjf(e));
+            delta += (float)creal(e*conj(e));
         }
         delta /= num_roots * gmax;
 #if LIQUID_POLY_FINDROOTS_DEBUG
@@ -107,7 +118,7 @@ int liquid_poly_findroots_durandkerner(double *         _p,
         if (delta < 1e-6f || i == max_num_iterations)
             continue_iterating = 0;
 
-        memmove(r0, r1, num_roots*sizeof(double));
+        memmove(r0, r1, num_roots*sizeof(liquid_double_complex));
         i++;
     }
 
@@ -122,10 +133,10 @@ int liquid_poly_findroots_durandkerner(double *         _p,
 //  _roots  :   resulting complex roots [size: _k-1 x 1]
 int liquid_poly_findroots_bairstow(double *         _p,
                                    unsigned int     _k,
-                                   double complex * _roots)
+                                   liquid_double_complex * _roots)
 {
-    double p0[_k];       // buffer 0
-    double p1[_k];       // buffer 1
+    LIQUID_VLA(double, p0, _k);       // buffer 0
+    LIQUID_VLA(double, p1, _k);       // buffer 1
     double * p   = NULL; // input polynomial
     double * pr  = NULL; // output (reduced) polynomial
 
@@ -156,8 +167,10 @@ int liquid_poly_findroots_bairstow(double *         _p,
             liquid_poly_findroots_bairstow_persistent(p,n,pr,&u,&v);
 
         // compute complex roots of x^2 + u*x + v
-        double complex r0 = 0.5f*(-u + csqrtf(u*u - 4.0*v));
-        double complex r1 = 0.5f*(-u - csqrtf(u*u - 4.0*v));
+        liquid_double_complex disc = u*u - 4.0*v;
+        liquid_double_complex sqrt_disc = csqrt(disc);
+        liquid_double_complex r0 = 0.5*(-u + sqrt_disc);
+        liquid_double_complex r1 = 0.5*(-u - sqrt_disc);
         //printf("roots: r0=%12.8f + j*%12.8f, r1=%12.8f + j*%12.8f\n\n",
         //        creal(r0), cimag(r0), creal(r1), cimag(r1));
 
@@ -229,8 +242,8 @@ int liquid_poly_findroots_bairstow_recursion(double *     _p,
     double du, dv;
 
     // reduced polynomials
-    double b[_k];
-    double f[_k];
+    LIQUID_VLA(double, b, _k);
+    LIQUID_VLA(double, f, _k);
     b[n] = b[n-1] = 0;
     f[n] = f[n-1] = 0;
 
@@ -358,11 +371,11 @@ int liquid_poly_findroots_bairstow_persistent(double *     _p,
 int liquid_poly_sort_roots_compare(const void * _a,
                                    const void * _b)
 {
-    double ar = (double) creal( *((double complex*)_a) );
-    double br = (double) creal( *((double complex*)_b) );
+    double ar = (double) creal( *((liquid_double_complex*)_a) );
+    double br = (double) creal( *((liquid_double_complex*)_b) );
 
-    double ai = (double) cimag( *((double complex*)_a) );
-    double bi = (double) cimag( *((double complex*)_b) );
+    double ai = (double) cimag( *((liquid_double_complex*)_a) );
+    double bi = (double) cimag( *((liquid_double_complex*)_b) );
 
     return ar == br ? (ai > bi ? -1 : 1) : (ar > br ? 1 : -1);
 }

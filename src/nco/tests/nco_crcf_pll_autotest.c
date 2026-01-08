@@ -20,7 +20,9 @@
  * THE SOFTWARE.
  */
 
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include "autotest/autotest.h"
 #include "liquid.h"
 
@@ -40,8 +42,8 @@ void nco_crcf_pll_test(int          _type,
                        float        _tol)
 {
     // objects
-    nco_crcf nco_tx = nco_crcf_create(_type);
-    nco_crcf nco_rx = nco_crcf_create(_type);
+    nco_crcf nco_tx = nco_crcf_create((liquid_ncotype)_type);
+    nco_crcf nco_rx = nco_crcf_create((liquid_ncotype)_type);
 
     // initialize objects
     nco_crcf_set_phase(nco_tx, _phase_offset);
@@ -51,7 +53,7 @@ void nco_crcf_pll_test(int          _type,
     // run loop
     unsigned int i;
     float phase_error;
-    float complex r, v;
+    liquid_float_complex r, v;
     for (i=0; i<_num_iterations; i++) {
         // received complex signal
         nco_crcf_cexpf(nco_tx,&r);

@@ -47,7 +47,7 @@ void testbench_ofdmflexframe(unsigned int      _M,
 
     // initialize header and payload
     unsigned char header[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-    unsigned char payload[_payload_len];
+    LIQUID_VLA(unsigned char, payload, _payload_len);
     memset(payload, 0x00, _payload_len);
 
     // assemble the frame
@@ -57,7 +57,7 @@ void testbench_ofdmflexframe(unsigned int      _M,
 
     // generate the frame
     unsigned int  buf_len = 1024;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     int frame_complete = 0;
     while (!frame_complete) {
         frame_complete = ofdmflexframegen_write(fg, buf, buf_len);

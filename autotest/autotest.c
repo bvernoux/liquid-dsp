@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "autotest/autotest.h"
+#include "liquid_vla.h"
 
 // total number of checks invoked
 unsigned long int liquid_autotest_num_checks=0;
@@ -193,7 +194,7 @@ int liquid_autotest_validate_spectrum(float * _psd, unsigned int _nfft,
         autotest_psd_s * _regions, unsigned int _num_regions, const char * _debug_filename)
 {
     unsigned int i, j;
-    int fail[_nfft];
+    LIQUID_VLA(int, fail, _nfft);
     for (j=0; j<_nfft; j++)
         fail[j] = 0;
     for (i=0; i<_num_regions; i++) {
@@ -264,13 +265,13 @@ int liquid_autotest_validate_spectrum(float * _psd, unsigned int _nfft,
 }
 
 // validate spectral content of a signal (complex)
-int liquid_autotest_validate_psd_signal(float complex * _buf, unsigned int _buf_len,
+int liquid_autotest_validate_psd_signal(liquid_float_complex * _buf, unsigned int _buf_len,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename)
 {
     // compute signal's power spectral density
     unsigned int nfft = 4 << liquid_nextpow2(_buf_len < 64 ? 64 : _buf_len);
-    float complex * buf_time = (float complex*) malloc(nfft*sizeof(float complex));
-    float complex * buf_freq = (float complex*) malloc(nfft*sizeof(float complex));
+    liquid_float_complex * buf_time = (liquid_float_complex*) malloc(nfft*sizeof(liquid_float_complex));
+    liquid_float_complex * buf_freq = (liquid_float_complex*) malloc(nfft*sizeof(liquid_float_complex));
     float         * buf_psd  = (float *       ) malloc(nfft*sizeof(float        ));
     if (buf_time == NULL || buf_freq == NULL || buf_psd == NULL) {
         AUTOTEST_FAIL("liquid_autotest_validate_psd_signal(), could not allocate appropriate memory for validating psd");
@@ -299,7 +300,7 @@ int liquid_autotest_validate_psd_signalf(float * _buf, unsigned int _buf_len,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename)
 {
     // copy to temporary complex array
-    float complex * buf_cplx = (float complex*) malloc(_buf_len*sizeof(float complex));
+    liquid_float_complex * buf_cplx = (liquid_float_complex*) malloc(_buf_len*sizeof(liquid_float_complex));
     if (buf_cplx == NULL) {
         AUTOTEST_FAIL("liquid_autotest_validate_psd_signalf(), could not allocate appropriate memory for validating psd");
         return -1;
@@ -321,11 +322,11 @@ int liquid_autotest_validate_psd_signalf(float * _buf, unsigned int _buf_len,
 int liquid_autotest_validate_psd_firfilt_crcf(firfilt_crcf _q, unsigned int _nfft,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename)
 {
-    float psd[_nfft];
+    LIQUID_VLA(float, psd, _nfft);
     unsigned int i;
     for (i=0; i<_nfft; i++) {
         float f = (float)(i)/(float)(_nfft) - 0.5f;
-        float complex H;
+        liquid_float_complex H;
         firfilt_crcf_freqresponse(_q, f, &H);
         psd[i] = 20*log10f(cabsf(H));
     }
@@ -336,11 +337,11 @@ int liquid_autotest_validate_psd_firfilt_crcf(firfilt_crcf _q, unsigned int _nff
 int liquid_autotest_validate_psd_firfilt_cccf(firfilt_cccf _q, unsigned int _nfft,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename)
 {
-    float psd[_nfft];
+    LIQUID_VLA(float, psd, _nfft);
     unsigned int i;
     for (i=0; i<_nfft; i++) {
         float f = (float)(i)/(float)(_nfft) - 0.5f;
-        float complex H;
+        liquid_float_complex H;
         firfilt_cccf_freqresponse(_q, f, &H);
         psd[i] = 20*log10f(cabsf(H));
     }
@@ -351,11 +352,11 @@ int liquid_autotest_validate_psd_firfilt_cccf(firfilt_cccf _q, unsigned int _nff
 int liquid_autotest_validate_psd_iirfilt_rrrf(iirfilt_rrrf _q, unsigned int _nfft,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename)
 {
-    float psd[_nfft];
+    LIQUID_VLA(float, psd, _nfft);
     unsigned int i;
     for (i=0; i<_nfft; i++) {
         float f = (float)(i)/(float)(_nfft) - 0.5f;
-        float complex H;
+        liquid_float_complex H;
         iirfilt_rrrf_freqresponse(_q, f, &H);
         psd[i] = 20*log10f(cabsf(H));
     }
@@ -367,7 +368,7 @@ int liquid_autotest_validate_psd_spgramcf(spgramcf _q,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename)
 {
     unsigned int nfft = spgramcf_get_nfft(_q);
-    float psd[nfft];
+    LIQUID_VLA(float, psd, nfft);
     spgramcf_get_psd(_q, psd);
     return liquid_autotest_validate_spectrum(psd,nfft,_regions,num_regions,debug_filename);
 }

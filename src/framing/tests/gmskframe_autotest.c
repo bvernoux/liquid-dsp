@@ -25,6 +25,7 @@
 #include <math.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // test simple recovery of GMSK frame
 void autotest_gmskframesync_process()
@@ -50,16 +51,16 @@ void autotest_gmskframesync_process()
     // assemble frame with specific data
     CONTEND_EQUALITY(gmskframegen_is_assembled(fg), 0);
     unsigned int i;
-    unsigned char header[8];
-    unsigned char msg   [msg_len];
+    LIQUID_VLA(unsigned char, header, 8);
+    LIQUID_VLA(unsigned char, msg, msg_len);
     for (i=0; i<8; i++)       header[i] = i;
     for (i=0; i<msg_len; i++) msg[i]    = i & 0xff;
-    gmskframegen_assemble(fg, header, msg, msg_len, crc, fec0, fec1);
+    gmskframegen_assemble(fg, header, msg, msg_len, crc, (fec_scheme)fec0, fec1);
     CONTEND_EQUALITY(gmskframegen_is_assembled(fg), 1);
 
     // allocate buffer (irregular size to test write method)
     unsigned int  buf_len = 53;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
 
     // generate the frame in blocks
     int frame_complete = 0;
@@ -100,7 +101,7 @@ void autotest_gmskframesync_multiple()
 
     // allocate buffer for processing
     unsigned int  buf_len = 200;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
 
     // generate multiple frames
     unsigned int n;
@@ -139,7 +140,7 @@ void testbench_gmskframesync(unsigned int _k, unsigned int _m, float _bt)
     // generate the frame in blocks
     gmskframegen_assemble_default(fg, 80);
     unsigned int  buf_len = 200;
-    float complex buf[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf, buf_len);
     int frame_complete = 0;
     while (!frame_complete) {
         frame_complete = gmskframegen_write(fg, buf, buf_len);

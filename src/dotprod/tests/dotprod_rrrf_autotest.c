@@ -179,7 +179,7 @@ void autotest_dotprod_rrrf_struct_align()
     dotprod_rrrf dp = dotprod_rrrf_create(h,16);
 
     // test data misalignment conditions
-    float x_buffer[20];
+    LIQUID_VLA(float, x_buffer, 20);
     float * x_hat;
     unsigned int i;
     for (i=0; i<4; i++) {
@@ -350,8 +350,8 @@ void autotest_dotprod_rrrf_struct_lengths()
 void runtest_dotprod_rrrf(unsigned int _n)
 {
     float tol = 1e-4;
-    float h[_n];
-    float x[_n];
+    LIQUID_VLA(float, h, _n);
+    LIQUID_VLA(float, x, _n);
 
     // generate random coefficients
     unsigned int i;

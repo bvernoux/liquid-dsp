@@ -30,11 +30,11 @@ void testbench_eqlms(unsigned int k, unsigned int m, float beta, int init,
 {
     //float          tol    = 0.025f; // error tolerance
     unsigned int   i;
-    modemcf        mod    = modemcf_create(ms);
+    modemcf        mod    = modemcf_create((modulation_scheme)ms);
     firinterp_crcf interp = firinterp_crcf_create_prototype(LIQUID_FIRFILT_ARKAISER,k,m,beta,0);
 
     // create fixed channel filter
-    float complex h[5] = {
+    liquid_float_complex h[5] = {
          1.00f +  0.00f*_Complex_I,
          0.00f + -0.01f*_Complex_I,
         -0.11f +  0.02f*_Complex_I,
@@ -43,7 +43,7 @@ void testbench_eqlms(unsigned int k, unsigned int m, float beta, int init,
     firfilt_cccf fchannel = firfilt_cccf_create(h,5);
 
     // prototype low-pass filter
-    float complex hp[2*k*p+1];
+    LIQUID_VLA(liquid_float_complex, hp, 2*k*p+1);
     for (i=0; i<2*k*p+1; i++)
         hp[i] = sincf( (float)i/(float)k - p) * liquid_hamming(i,2*k*p+1) / k;
 
@@ -58,8 +58,8 @@ void testbench_eqlms(unsigned int k, unsigned int m, float beta, int init,
     eqlms_cccf_set_bw(eq, mu);
 
     // run equalization
-    float complex buf[k];                   // sample buffer
-    float complex sym_in, sym_out;          // modulated/recovered symbols
+    LIQUID_VLA(liquid_float_complex, buf, k);                   // sample buffer
+    liquid_float_complex sym_in, sym_out;          // modulated/recovered symbols
     wdelaycf buf_sym = wdelaycf_create(m+p);// symbol buffer to account for filter delays
     float rmse = 0.0f; // root mean-squared error
     for (i=0; i<2*num_symbols; i++) {
@@ -85,7 +85,7 @@ void testbench_eqlms(unsigned int k, unsigned int m, float beta, int init,
 
         // update equalizer weights
         if (i < num_symbols) {
-            float complex d_hat;
+            liquid_float_complex d_hat;
             unsigned int  index;
             switch (update) {
             case 0: eqlms_cccf_step(eq, sym_in, sym_out); break; // perfect knowledge
@@ -178,13 +178,13 @@ void autotest_eqlms_config()
     CONTEND_INEQUALITY(LIQUID_OK, eqlms_cccf_decim_execute(q, NULL, NULL, 0));
 
     // test getting weights
-    float complex h[h_len];
+    LIQUID_VLA(liquid_float_complex, h, h_len);
     eqlms_cccf_copy_coefficients(q, h);
     for (i=0; i<h_len; i++)
-        CONTEND_EQUALITY(h[i], i==k*m ? 1 : 0);
-    const float complex * w = eqlms_cccf_get_coefficients(q);
+        CONTEND_EQUALITY_COMPLEX(h[i], i==k*m ? 1.0f : 0.0f);
+    const liquid_float_complex * w = eqlms_cccf_get_coefficients(q);
     for (i=0; i<h_len; i++)
-        CONTEND_EQUALITY(w[i], i==k*m ? 1 : 0);
+        CONTEND_EQUALITY_COMPLEX(w[i], i==k*m ? 1.0f : 0.0f);
 
     // clean it up
     eqlms_cccf_destroy(q);
@@ -199,7 +199,7 @@ void autotest_eqlms_cccf_copy()
 
     // run random samples through object
     unsigned int i;
-    float complex x, v, y0, y1;
+    liquid_float_complex x, v, y0, y1;
     for (i=0; i<120; i++) {
         x = randnf() + _Complex_I*randnf();
         eqlms_cccf_push(q0, x);
@@ -218,7 +218,7 @@ void autotest_eqlms_cccf_copy()
         // compute output
         eqlms_cccf_execute(q0, &y0);
         eqlms_cccf_execute(q1, &y1);
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
 
         // step equalization algorithm
         v = randnf() + _Complex_I*randnf();
@@ -229,7 +229,7 @@ void autotest_eqlms_cccf_copy()
     // get and compare coefficients
     CONTEND_SAME_DATA(eqlms_cccf_get_coefficients(q0),
                       eqlms_cccf_get_coefficients(q1),
-                      21 * sizeof(float complex));
+                      21 * sizeof(liquid_float_complex));
 
     // destroy filter objects
     eqlms_cccf_destroy(q0);

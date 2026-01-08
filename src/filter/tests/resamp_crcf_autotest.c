@@ -42,14 +42,14 @@ void testbench_resamp_crcf(float r, float As, int _id)
     unsigned int p = (unsigned int) (40.0f / r);
     unsigned int pulse_len = 4*p + 1;
     //printf("pulse len: 4*%u+1 = %u, r=%f, bw=%f\n", p, pulse_len, r, bw);
-    float        pulse[pulse_len];
+    LIQUID_VLA(float, pulse, pulse_len);
     liquid_firdes_kaiser(pulse_len, 0.5*r*bw, 120, 0, pulse);
 
     // allocate buffers and copy input
     unsigned int  num_input  = pulse_len + 2*m + 1;
     unsigned int  num_output = resamp_crcf_get_num_output(resamp, num_input);
-    float complex buf_0[num_input];  // input buffer
-    float complex buf_1[num_output]; // output buffer
+    LIQUID_VLA(liquid_float_complex, buf_0, num_input);  // input buffer
+    LIQUID_VLA(liquid_float_complex, buf_1, num_output); // output buffer
     unsigned int i;
     for (i=0; i<num_input; i++)
         buf_0[i] = i < pulse_len ? pulse[i]*bw : 0;
@@ -60,11 +60,11 @@ void testbench_resamp_crcf(float r, float As, int _id)
 
     // verify result
     autotest_psd_s regions[] = {
-        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
+        {.fmin=-0.5f,    .fmax=-0.6f*bw, .pmin=0.0f,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
         {.fmin=-0.4f*bw, .fmax=+0.4f*bw, .pmin=0-tol, .pmax= 0 +tol, .test_lo=1, .test_hi=1},
-        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
+        {.fmin=+0.6f*bw, .fmax=+0.5f,    .pmin=0.0f,     .pmax=-As+tol, .test_lo=0, .test_hi=1},
     };
-    char filename[256];
+    LIQUID_VLA(char, filename, 256);
     sprintf(filename,"autotest/logs/resamp_crcf_%.2d.m", _id);
     liquid_autotest_validate_psd_signal(buf_1, nw, regions, 3,
         liquid_autotest_verbose ? filename : NULL);
@@ -105,8 +105,8 @@ void testbench_resamp_crcf_num_output(float _rate, unsigned int _npfb)
     unsigned int max_input = 64;
     unsigned int max_output = 16 + (unsigned int)(4.0f * max_input * _rate);
     printf("max_input : %u, max_output : %u\n", max_input, max_output);
-    float complex buf_0[max_input];
-    float complex buf_1[max_output];
+    LIQUID_VLA(liquid_float_complex, buf_0, max_input);
+    LIQUID_VLA(liquid_float_complex, buf_1, max_output);
     unsigned int i;
     for (i=0; i<max_input; i++)
         buf_0[i] = 0.0f;
@@ -149,9 +149,9 @@ void autotest_resamp_crcf_copy()
 
     // run samples through filter
     unsigned int i, nw0, nw1, num_samples = 80;
-    float complex y0, y1;
+    liquid_float_complex y0, y1;
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         resamp_crcf_execute(q0, v, &y0, &nw0);
     }
 
@@ -160,7 +160,7 @@ void autotest_resamp_crcf_copy()
 
     // run samples through both filters and check equality
     for (i=0; i<num_samples; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         resamp_crcf_execute(q0, v, &y0, &nw0);
         resamp_crcf_execute(q1, v, &y1, &nw1);
 
@@ -173,7 +173,7 @@ void autotest_resamp_crcf_copy()
 
         // check output sample values
         if (nw0==1 && nw1==1)
-            CONTEND_EQUALITY(y0, y1);
+            CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy objects

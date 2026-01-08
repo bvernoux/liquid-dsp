@@ -60,8 +60,8 @@ void autotest_firpfbchr_crcf()
     spgramcf     c3   = spgramcf_create_default(nfft);
 
     // run channelizer
-    float complex buf_0[P];
-    float complex buf_1[M];
+    LIQUID_VLA(liquid_float_complex, buf_0, P);
+    LIQUID_VLA(liquid_float_complex, buf_1, M);
     unsigned int i;
     for (i=0; i<num_blocks; i++) {
         // write samples to buffer
@@ -79,30 +79,30 @@ void autotest_firpfbchr_crcf()
 
     // verify results: full spectrum
     autotest_psd_s regions[] = {
-        {.fmin=-0.50f, .fmax=-0.37f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
-        {.fmin=-0.34f, .fmax=-0.26f, .pmin=-25, .pmax=-15, .test_lo=1, .test_hi=1},
-        {.fmin=-0.24f, .fmax= 0.05f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
-        {.fmin= 0.10f, .fmax= 0.13f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
-        {.fmin= 0.16f, .fmax= 0.21f, .pmin=-25, .pmax=-15, .test_lo=1, .test_hi=1},
-        {.fmin= 0.25f, .fmax= 0.50f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
+        {.fmin=-0.50f, .fmax=-0.37f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
+        {.fmin=-0.34f, .fmax=-0.26f, .pmin=-25.0f, .pmax=-15.0f, .test_lo=1, .test_hi=1},
+        {.fmin=-0.24f, .fmax= 0.05f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
+        {.fmin= 0.10f, .fmax= 0.13f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
+        {.fmin= 0.16f, .fmax= 0.21f, .pmin=-25.0f, .pmax=-15.0f, .test_lo=1, .test_hi=1},
+        {.fmin= 0.25f, .fmax= 0.50f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
     };
     liquid_autotest_validate_psd_spgramcf(p0, regions, 6,
         liquid_autotest_verbose ? "autotest/logs/firpfbchr_crcf_psd.m" : NULL);
 
     // verify results: channel 2
     autotest_psd_s regions_2[] = {
-        {.fmin=-0.47f, .fmax= 0.05f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
-        {.fmin= 0.08f, .fmax= 0.12f, .pmin=-35, .pmax=-25, .test_lo=1, .test_hi=1},
-        {.fmin= 0.15f, .fmax= 0.47f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
+        {.fmin=-0.47f, .fmax= 0.05f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
+        {.fmin= 0.08f, .fmax= 0.12f, .pmin=-35.0f, .pmax=-25.0f, .test_lo=1, .test_hi=1},
+        {.fmin= 0.15f, .fmax= 0.47f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
     };
     liquid_autotest_validate_psd_spgramcf(c1, regions_2, 3,
         liquid_autotest_verbose ? "autotest/logs/firpfbchr_crcf_c1.m" : NULL);
 
     // verify results: channel 3
     autotest_psd_s regions_3[] = {
-        {.fmin=-0.47f, .fmax=-0.28f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
-        {.fmin=-0.15f, .fmax=+0.15f, .pmin=-25, .pmax=-15, .test_lo=1, .test_hi=1},
-        {.fmin= 0.28f, .fmax=+0.47f, .pmin=-65, .pmax=-55, .test_lo=1, .test_hi=1},
+        {.fmin=-0.47f, .fmax=-0.28f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
+        {.fmin=-0.15f, .fmax=+0.15f, .pmin=-25.0f, .pmax=-15.0f, .test_lo=1, .test_hi=1},
+        {.fmin= 0.28f, .fmax=+0.47f, .pmin=-65.0f, .pmax=-55.0f, .test_lo=1, .test_hi=1},
     };
     liquid_autotest_validate_psd_spgramcf(c3, regions_3, 3,
         liquid_autotest_verbose ? "autotest/logs/firpfbchr_crcf_c3.m" : NULL);
@@ -126,7 +126,7 @@ void autotest_firpfbchr_crcf_config()
 #endif
     // design prototype filter
     unsigned int h_len = 2*64*12+1;
-    float h[2*64*12+1];
+    LIQUID_VLA(float, h, 2*64*12+1);
     liquid_firdes_kaiser(h_len, 0.1f, 60.0f, 0.0f, h);
 
     // check invalid function calls

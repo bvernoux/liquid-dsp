@@ -23,6 +23,7 @@
 #include <assert.h>
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 // Helper function to keep code base small
 void firpfbch2_crcf_runtest(unsigned int _M,
@@ -37,8 +38,8 @@ void firpfbch2_crcf_runtest(unsigned int _M,
     unsigned int num_samples = _M * num_symbols;
 
     // allocate arrays
-    float complex x[num_samples];
-    float complex y[num_samples];
+    LIQUID_VLA(liquid_float_complex, x, num_samples);
+    LIQUID_VLA(liquid_float_complex, y, num_samples);
 
     // generate pseudo-random sequence
     unsigned int s = 1;         // seed
@@ -55,7 +56,7 @@ void firpfbch2_crcf_runtest(unsigned int _M,
     firpfbch2_crcf qs = firpfbch2_crcf_create_kaiser(LIQUID_SYNTHESIZER, _M, _m, _as);
 
     // run channelizer
-    float complex Y[_M];
+    LIQUID_VLA(liquid_float_complex, Y, _M);
     for (i=0; i<num_samples; i+=_M/2) {
         // run analysis filterbank
         firpfbch2_crcf_execute(qa, &x[i], Y);
@@ -82,7 +83,7 @@ void firpfbch2_crcf_runtest(unsigned int _M,
         }
 
         // compute rmse
-        float complex err = y[i] - (i < delay ? 0.0f : x[i-delay]);
+        liquid_float_complex err = y[i] - (i < delay ? 0.0f : x[i-delay]);
         rmse += crealf(err * conjf(err));
     }
 
@@ -105,9 +106,9 @@ void autotest_firpfbch2_crcf_copy()
     float        as = 80.0f;
     firpfbch2_crcf q_orig = firpfbch2_crcf_create_kaiser(LIQUID_ANALYZER, M, m, as);
 
-    float complex buf_0     [M/2];
-    float complex buf_1_orig[M  ];
-    float complex buf_1_copy[M  ];
+    LIQUID_VLA(liquid_float_complex, buf_0, M/2);
+    LIQUID_VLA(liquid_float_complex, buf_1_orig, M  );
+    LIQUID_VLA(liquid_float_complex, buf_1_copy, M  );
 
     // start running input through filter
     unsigned int num_blocks = 32;
@@ -131,7 +132,7 @@ void autotest_firpfbch2_crcf_copy()
         firpfbch2_crcf_execute(q_orig, buf_0, buf_1_orig);
         firpfbch2_crcf_execute(q_copy, buf_0, buf_1_copy);
 
-        CONTEND_SAME_DATA(buf_1_orig, buf_1_copy, M*sizeof(float complex));
+        CONTEND_SAME_DATA(buf_1_orig, buf_1_copy, M*sizeof(liquid_float_complex));
     }
 
     // destroy filter objects

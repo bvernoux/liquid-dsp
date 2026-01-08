@@ -43,7 +43,7 @@ QUANTIZER() QUANTIZER(_create)(liquid_compander_type _ctype,
 {
     // validate input
     if (_num_bits == 0)
-        return liquid_error_config("quantizer_create(), must have at least one bit/sample");
+        return liquid_error_config_ptr(QUANTIZER(), "quantizer_create(), must have at least one bit/sample");
 
     // create quantizer object
     QUANTIZER() q = (QUANTIZER()) malloc(sizeof(struct QUANTIZER(_s)));

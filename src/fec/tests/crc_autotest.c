@@ -75,7 +75,7 @@ void testbench_autotest_crc(crc_scheme _check,
     unsigned int i;
 
     // generate pseudo-random data
-    unsigned char data[_n];
+    LIQUID_VLA(unsigned char, data, _n);
     msequence ms = msequence_create_default(9);
     for (i=0; i<_n; i++)
         data[i] = msequence_generate_symbol(ms,8);
@@ -88,7 +88,7 @@ void testbench_autotest_crc(crc_scheme _check,
     CONTEND_EXPRESSION(crc_validate_message(_check, data, _n, key));
 
     // test flipping bit value at each location in message and confirm check fails
-    unsigned char data_corrupt[_n];
+    LIQUID_VLA(unsigned char, data_corrupt, _n);
     unsigned int j;
     for (i=0; i<_n; i++) {
         for (j=0; j<8; j++) {
@@ -139,7 +139,7 @@ void autotest_crc_config()
     CONTEND_EQUALITY(crc_get_length(LIQUID_CRC_16),       2);
     CONTEND_EQUALITY(crc_get_length(LIQUID_CRC_24),       3);
     CONTEND_EQUALITY(crc_get_length(LIQUID_CRC_32),       4);
-    CONTEND_EQUALITY(crc_get_length(-1),                  0);
+    CONTEND_EQUALITY(crc_get_length((crc_scheme)-1),                  0);
 }
 
 

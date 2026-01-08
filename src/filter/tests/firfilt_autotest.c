@@ -22,6 +22,7 @@
 
 #include "autotest/autotest.h"
 #include "liquid.h"
+#include "liquid_vla.h"
 
 void autotest_firfilt_crcf_kaiser()
 {
@@ -31,9 +32,9 @@ void autotest_firfilt_crcf_kaiser()
 
     // verify resulting spectrum
     autotest_psd_s regions[] = {
-      {.fmin=-0.5,   .fmax=-0.25,  .pmin= 0,   .pmax=-60,  .test_lo=0, .test_hi=1},
+      {.fmin=-0.5,   .fmax=-0.25,  .pmin=0.0f,   .pmax=-60.0f,  .test_lo=0, .test_hi=1},
       {.fmin=-0.15,  .fmax=+0.15,  .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
-      {.fmin= 0.25,  .fmax=+0.5,   .pmin= 0,   .pmax=-60,  .test_lo=0, .test_hi=1},
+      {.fmin= 0.25,  .fmax=+0.5,   .pmin=0.0f,   .pmax=-60.0f,  .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_firfilt_crcf(q, 1200, regions, 3,
         liquid_autotest_verbose ? "autotest/logs/firfilt_crcf_kaiser.m" : NULL);
@@ -48,9 +49,9 @@ void autotest_firfilt_crcf_firdespm()
 
     // verify resulting spectrum
     autotest_psd_s regions[] = {
-      {.fmin=-0.5,   .fmax=-0.25,  .pmin= 0,   .pmax=-60,  .test_lo=0, .test_hi=1},
+      {.fmin=-0.5,   .fmax=-0.25,  .pmin=0.0f,   .pmax=-60.0f,  .test_lo=0, .test_hi=1},
       {.fmin=-0.15,  .fmax=+0.15,  .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
-      {.fmin= 0.25,  .fmax=+0.5,   .pmin= 0,   .pmax=-60,  .test_lo=0, .test_hi=1},
+      {.fmin= 0.25,  .fmax=+0.5,   .pmin=0.0f,   .pmax=-60.0f,  .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_firfilt_crcf(q, 1200, regions, 3,
         liquid_autotest_verbose ? "autotest/logs/firfilt_crcf_firdespm.m" : NULL);
@@ -65,9 +66,9 @@ void autotest_firfilt_crcf_rect()
 
     // verify resulting spectrum
     autotest_psd_s regions[] = {
-      {.fmin=-0.5,   .fmax=-0.20,  .pmin= 0, .pmax=-10, .test_lo=0, .test_hi=1},
-      {.fmin=-0.12,  .fmax=+0.12,  .pmin=-5, .pmax= +1, .test_lo=1, .test_hi=1},
-      {.fmin= 0.20,  .fmax=+0.5,   .pmin= 0, .pmax=-10, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5,   .fmax=-0.20,  .pmin=0.0f, .pmax=-10.0f, .test_lo=0, .test_hi=1},
+      {.fmin=-0.12,  .fmax=+0.12,  .pmin=-5.0f, .pmax= +1, .test_lo=1, .test_hi=1},
+      {.fmin= 0.20,  .fmax=+0.5,   .pmin=0.0f, .pmax=-10.0f, .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_firfilt_crcf(q, 301, regions, 3,
         liquid_autotest_verbose ? "autotest/logs/firfilt_crcf_rect.m" : NULL);
@@ -80,9 +81,9 @@ void autotest_firfilt_crcf_notch()
     firfilt_crcf q = firfilt_crcf_create_notch(20, 60.0f, 0.125f);
     autotest_psd_s regions[] = {
       {.fmin=-0.5,   .fmax=-0.20,  .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
-      {.fmin=-0.126, .fmax=-0.124, .pmin=   0, .pmax= -50, .test_lo=0, .test_hi=1},
+      {.fmin=-0.126, .fmax=-0.124, .pmin=0.0f, .pmax= -50, .test_lo=0, .test_hi=1},
       {.fmin=-0.06,  .fmax=+0.06,  .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
-      {.fmin=+0.124, .fmax=+0.126, .pmin=   0, .pmax= -50, .test_lo=0, .test_hi=1},
+      {.fmin=+0.124, .fmax=+0.126, .pmin=0.0f, .pmax= -50, .test_lo=0, .test_hi=1},
       {.fmin= 0.20,  .fmax=+0.5,   .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
     };
     liquid_autotest_validate_psd_firfilt_crcf(q, 1200, regions, 5,
@@ -96,7 +97,7 @@ void autotest_firfilt_cccf_notch()
     firfilt_cccf q = firfilt_cccf_create_notch(20, 60.0f, 0.125f);
     autotest_psd_s regions[] = {
       {.fmin=-0.5,   .fmax=+0.06,  .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
-      {.fmin=+0.124, .fmax=+0.126, .pmin=   0, .pmax= -50, .test_lo=0, .test_hi=1},
+      {.fmin=+0.124, .fmax=+0.126, .pmin=0.0f, .pmax= -50, .test_lo=0, .test_hi=1},
       {.fmin= 0.20,  .fmax=+0.5,   .pmin=-0.1, .pmax=+0.1, .test_lo=1, .test_hi=1},
     };
     liquid_autotest_validate_psd_firfilt_cccf(q, 1200, regions, 3,
@@ -143,7 +144,8 @@ void autotest_firfilt_recreate()
 {
     // create random-ish coefficients
     unsigned int i, n = 21;
-    float h0[n], h1[n];
+    LIQUID_VLA(float, h0, n);
+    LIQUID_VLA(float, h1, n);
     for (i=0; i<n; i++)
         h0[i] = cosf(0.3*i) + sinf(sqrtf(2.0f)*i);
 
@@ -174,16 +176,16 @@ void autotest_firfilt_recreate()
         CONTEND_EQUALITY(h[n-i-1], h0[i]*7.1f);
 
     // re-create with longer coefficients array and test impulse response
-    float h2[2*n+1]; // new random-ish coefficients
+    LIQUID_VLA(float, h2, 2*n+1); // new random-ish coefficients
     for (i=0; i<2*n+1; i++)
         h2[i] = cosf(0.2*i+1) + sinf(logf(2.0f)*i);
     q = firfilt_crcf_recreate(q, h2, 2*n+1);
     for (i=0; i<2*n+1; i++) {
         firfilt_crcf_push(q, i==0 ? 1 : 0);
-        float complex v;
+        liquid_float_complex v;
         firfilt_crcf_execute(q, &v);
         // output is same as input, subject to scaling factor
-        CONTEND_EQUALITY(v, h2[i]*scale);
+        CONTEND_EQUALITY_COMPLEX(v, h2[i]*scale);
     }
 
     firfilt_crcf_destroy(q);

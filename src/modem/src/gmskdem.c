@@ -53,7 +53,7 @@ struct gmskdem_s {
     firfilt_rrrf filter;    // receiver matched filter
 #endif
 
-    float complex x_prime;  // received signal state
+    liquid_float_complex x_prime;  // received signal state
 
     // demodulated symbols counter
     unsigned int num_symbols_demod;
@@ -72,11 +72,11 @@ gmskdem gmskdem_create(unsigned int _k,
                        float        _BT)
 {
     if (_k < 2)
-        return liquid_error_config("gmskdem_create(), samples/symbol must be at least 2");
+        return (gmskdem)liquid_error_config("gmskdem_create(), samples/symbol must be at least 2");
     if (_m < 1)
-        return liquid_error_config("gmskdem_create(), symbol delay must be at least 1");
+        return (gmskdem)liquid_error_config("gmskdem_create(), symbol delay must be at least 1");
     if (_BT <= 0.0f || _BT >= 1.0f)
-        return liquid_error_config("gmskdem_create(), bandwidth/time product must be in (0,1)");
+        return (gmskdem)liquid_error_config("gmskdem_create(), bandwidth/time product must be in (0,1)");
 
     // allocate memory for main object
     gmskdem q = (gmskdem)malloc(sizeof(struct gmskdem_s));
@@ -123,7 +123,7 @@ gmskdem gmskdem_copy(gmskdem q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("gmskdem_copy(), object cannot be NULL");
+        return (gmskdem)liquid_error_config("gmskdem_copy(), object cannot be NULL");
 
     // create object and copy base parameters
     gmskdem q_copy = (gmskdem) malloc(sizeof(struct gmskdem_s));
@@ -219,7 +219,7 @@ int gmskdem_set_eq_bw(gmskdem _q,
 }
 
 int gmskdem_demodulate(gmskdem         _q,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int *  _s)
 {
     // increment symbol counter
@@ -304,12 +304,12 @@ int gmskdem_debug_print(gmskdem      _q,
 
     // plot receive filter response
     fprintf(fid,"ht = zeros(1,2*k*m+1);\n");
-    float ht[_q->h_len];
+    LIQUID_VLA(float, ht, _q->h_len);
     liquid_firdes_gmsktx(_q->k, _q->m, _q->BT, 0.0f, ht);
     for (i=0; i<_q->h_len; i++)
         fprintf(fid,"ht(%4u) = %12.4e;\n", i+1, ht[i]);
 #if GMSKDEM_USE_EQUALIZER
-    float hr[_q->h_len];
+    LIQUID_VLA(float, hr, _q->h_len);
     eqlms_rrrf_get_weights(_q->eq, hr);
     for (i=0; i<_q->h_len; i++)
         fprintf(fid,"hr(%4u) = %12.4e * %u;\n", i+1, hr[i], _q->k);

@@ -60,11 +60,11 @@ int fec_sumproduct(unsigned int    _m,
 
     // internal variables
     unsigned int num_iterations = 0;
-    float Lq[_m*_n];
-    float Lr[_m*_n];
-    float Lc[_n];
-    float LQ[_n];
-    unsigned char parity[_m];
+    LIQUID_VLA(float, Lq, _m*_n);
+    LIQUID_VLA(float, Lr, _m*_n);
+    LIQUID_VLA(float, Lc, _n);
+    LIQUID_VLA(float, LQ, _n);
+    LIQUID_VLA(unsigned char, parity, _m);
     unsigned int i;
     unsigned int j;
     int parity_pass;

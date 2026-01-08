@@ -43,7 +43,7 @@ void firfilt_rrrf_test(float *      _h,
     firfilt_rrrf q = firfilt_rrrf_create(_h, _h_len);
 
     // allocate memory for output
-    float y_test[_y_len];
+    LIQUID_VLA(float, y_test, _y_len);
 
     unsigned int i;
     // compute output
@@ -67,9 +67,9 @@ void firfilt_rrrf_test(float *      _h,
 //  _y_len  :   output array length
 void firfilt_crcf_test(float *         _h,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len)
 {
     float tol = 0.001f;
@@ -78,7 +78,7 @@ void firfilt_crcf_test(float *         _h,
     firfilt_crcf q = firfilt_crcf_create(_h, _h_len);
 
     // allocate memory for output
-    float complex y_test[_y_len];
+    LIQUID_VLA(liquid_float_complex, y_test, _y_len);
 
     unsigned int i;
     // compute output
@@ -101,11 +101,11 @@ void firfilt_crcf_test(float *         _h,
 //  _x_len  :   input array length
 //  _y      :   output array
 //  _y_len  :   output array length
-void firfilt_cccf_test(float complex * _h,
+void firfilt_cccf_test(liquid_float_complex * _h,
                        unsigned int    _h_len,
-                       float complex * _x,
+                       liquid_float_complex * _x,
                        unsigned int    _x_len,
-                       float complex * _y,
+                       liquid_float_complex * _y,
                        unsigned int    _y_len)
 {
     float tol = 0.001f;
@@ -114,7 +114,7 @@ void firfilt_cccf_test(float complex * _h,
     firfilt_cccf q = firfilt_cccf_create(_h, _h_len);
 
     // allocate memory for output
-    float complex y_test[_y_len];
+    LIQUID_VLA(liquid_float_complex, y_test, _y_len);
 
     unsigned int i;
     // compute output

@@ -47,7 +47,7 @@ FFT(plan) FFT(_create_plan_r2r_1d)(unsigned int _nfft,
     q->nfft   = _nfft;
     q->xr     = _x;
     q->yr     = _y;
-    q->type   = _type;
+    q->type   = (liquid_fft_type)_type;
     q->flags  = _flags;
 
     // TODO : use separate 'method' for real-to-real types
@@ -64,7 +64,7 @@ FFT(plan) FFT(_create_plan_r2r_1d)(unsigned int _nfft,
     case LIQUID_FFT_RODFT01:  q->execute = &FFT(_execute_RODFT01);  break;  // DST-III
     case LIQUID_FFT_RODFT11:  q->execute = &FFT(_execute_RODFT11);  break;  // DST-IV
     default:
-        return liquid_error_config("fft_create_plan_r2r_1d(), invalid type, %d", q->type);
+        return liquid_error_config_ptr(FFT(plan), "fft_create_plan_r2r_1d(), invalid type, %d", q->type);
     }
 
     return q;

@@ -59,18 +59,18 @@ RESAMP() RESAMP(_create)(float        _rate,
 {
     // validate input
     if (_rate <= 0)
-        return liquid_error_config("resamp_%s_create(), resampling rate must be greater than zero", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_create(), resampling rate must be greater than zero", EXTENSION_FULL);
     if (_m == 0)
-        return liquid_error_config("resamp_%s_create(), filter semi-length must be greater than zero", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_create(), filter semi-length must be greater than zero", EXTENSION_FULL);
     if (_fc <= 0.0f || _fc >= 0.5f)
-        return liquid_error_config("resamp_%s_create(), filter cutoff must be in (0,0.5)", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_create(), filter cutoff must be in (0,0.5)", EXTENSION_FULL);
     if (_as <= 0.0f)
-        return liquid_error_config("resamp_%s_create(), filter stop-band suppression must be greater than zero", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_create(), filter stop-band suppression must be greater than zero", EXTENSION_FULL);
 
     // check number of bits representing filter bank resolution
     unsigned int bits = liquid_nextpow2(_npfb);
     if (bits < 1 || bits > 16)
-        return liquid_error_config("resamp_%s_create(), number of filter banks must be in (2^0,2^16)", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_create(), number of filter banks must be in (2^0,2^16)", EXTENSION_FULL);
 
     // allocate memory for resampler
     RESAMP() q = (RESAMP()) malloc(sizeof(struct RESAMP(_s)));
@@ -88,8 +88,8 @@ RESAMP() RESAMP(_create)(float        _rate,
 
     // design filter
     unsigned int n = 2*q->m*q->npfb+1;
-    float hf[n];
-    TC h[n];
+    LIQUID_VLA(float, hf, n);
+    LIQUID_VLA(TC, h, n);
     liquid_firdes_kaiser(n,q->fc/((float)(q->npfb)),q->as,0.0f,hf);
 
     // normalize filter coefficients by DC gain
@@ -119,7 +119,7 @@ RESAMP() RESAMP(_create_default)(float _rate)
 {
     // validate input
     if (_rate <= 0)
-        return liquid_error_config("resamp_%s_create_default(), resampling rate must be greater than zero", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_create_default(), resampling rate must be greater than zero", EXTENSION_FULL);
 
     // det default parameters
     unsigned int m    = 7;
@@ -136,7 +136,7 @@ RESAMP() RESAMP(_copy)(RESAMP() q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("resamp_%s_copy(), object cannot be NULL", EXTENSION_FULL);
+        return liquid_error_config_ptr(RESAMP(), "resamp_%s_copy(), object cannot be NULL", EXTENSION_FULL);
 
     // create object, copy internal memory, overwrite with specific values
     RESAMP() q_copy = (RESAMP()) malloc(sizeof(struct RESAMP(_s)));

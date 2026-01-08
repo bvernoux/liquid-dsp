@@ -163,7 +163,7 @@ NCO() NCO(_create)(liquid_ncotype _type)
         break;
     }
     default:
-        return liquid_error_config("nco_%s_create(), unknown type : %u\n", EXTENSION, q->type);
+        return liquid_error_config_ptr(NCO(), "nco_%s_create(), unknown type : %u\n", EXTENSION, q->type);
     }
 
     // set default pll bandwidth
@@ -179,7 +179,7 @@ NCO() NCO(_copy)(NCO() q_orig)
 {
     // validate input
     if (q_orig == NULL)
-        return liquid_error_config("nco_%s_copy(), object cannot be NULL", EXTENSION);
+        return liquid_error_config_ptr(NCO(), "nco_%s_copy(), object cannot be NULL", EXTENSION);
 
     // allocate new object, copy main component memory
     NCO() q_copy = (NCO()) malloc(sizeof(struct NCO(_s)));
@@ -196,7 +196,7 @@ NCO() NCO(_copy)(NCO() q_orig)
     case LIQUID_VCO_DIRECT:
         break;
     default:
-        return liquid_error_config("nco_%s_copy(), unknown type: %u", q_copy->type, EXTENSION);
+        return liquid_error_config_ptr(NCO(), "nco_%s_copy(), unknown type: %u", q_copy->type, EXTENSION);
     }
 
     return q_copy;

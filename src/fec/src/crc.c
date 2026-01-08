@@ -85,7 +85,7 @@ crc_scheme liquid_getopt_str2crc(const char * _str)
     unsigned int i;
     for (i=0; i<LIQUID_CRC_NUM_SCHEMES; i++) {
         if (strcmp(_str,crc_scheme_str[i][0])==0) {
-            return i;
+            return (crc_scheme)i;
         }
     }
 

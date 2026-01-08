@@ -46,17 +46,17 @@ void firdecim_rrrf_test(unsigned int _M,
 void firdecim_crcf_test(unsigned int    _M,
                         float *         _h,
                         unsigned int    _h_len,
-                        float complex * _x,
+                        liquid_float_complex * _x,
                         unsigned int    _x_len,
-                        float complex * _y,
+                        liquid_float_complex * _y,
                         unsigned int    _y_len);
 
 void firdecim_cccf_test(unsigned int    _M,
-                        float complex * _h,
+                        liquid_float_complex * _h,
                         unsigned int    _h_len,
-                        float complex * _x,
+                        liquid_float_complex * _x,
                         unsigned int    _x_len,
-                        float complex * _y,
+                        liquid_float_complex * _y,
                         unsigned int    _y_len);
 
 // 
@@ -82,37 +82,37 @@ extern float         firdecim_rrrf_data_M5h23x50_y[];
 
 // crcf
 extern float         firdecim_crcf_data_M2h4x20_h[];
-extern float complex firdecim_crcf_data_M2h4x20_x[];
-extern float complex firdecim_crcf_data_M2h4x20_y[];
+extern liquid_float_complex firdecim_crcf_data_M2h4x20_x[];
+extern liquid_float_complex firdecim_crcf_data_M2h4x20_y[];
 
 extern float         firdecim_crcf_data_M3h7x30_h[];
-extern float complex firdecim_crcf_data_M3h7x30_x[];
-extern float complex firdecim_crcf_data_M3h7x30_y[];
+extern liquid_float_complex firdecim_crcf_data_M3h7x30_x[];
+extern liquid_float_complex firdecim_crcf_data_M3h7x30_y[];
 
 extern float         firdecim_crcf_data_M4h13x40_h[];
-extern float complex firdecim_crcf_data_M4h13x40_x[];
-extern float complex firdecim_crcf_data_M4h13x40_y[];
+extern liquid_float_complex firdecim_crcf_data_M4h13x40_x[];
+extern liquid_float_complex firdecim_crcf_data_M4h13x40_y[];
 
 extern float         firdecim_crcf_data_M5h23x50_h[];
-extern float complex firdecim_crcf_data_M5h23x50_x[];
-extern float complex firdecim_crcf_data_M5h23x50_y[];
+extern liquid_float_complex firdecim_crcf_data_M5h23x50_x[];
+extern liquid_float_complex firdecim_crcf_data_M5h23x50_y[];
 
 // cccf
-extern float complex firdecim_cccf_data_M2h4x20_h[];
-extern float complex firdecim_cccf_data_M2h4x20_x[];
-extern float complex firdecim_cccf_data_M2h4x20_y[];
+extern liquid_float_complex firdecim_cccf_data_M2h4x20_h[];
+extern liquid_float_complex firdecim_cccf_data_M2h4x20_x[];
+extern liquid_float_complex firdecim_cccf_data_M2h4x20_y[];
 
-extern float complex firdecim_cccf_data_M3h7x30_h[];
-extern float complex firdecim_cccf_data_M3h7x30_x[];
-extern float complex firdecim_cccf_data_M3h7x30_y[];
+extern liquid_float_complex firdecim_cccf_data_M3h7x30_h[];
+extern liquid_float_complex firdecim_cccf_data_M3h7x30_x[];
+extern liquid_float_complex firdecim_cccf_data_M3h7x30_y[];
 
-extern float complex firdecim_cccf_data_M4h13x40_h[];
-extern float complex firdecim_cccf_data_M4h13x40_x[];
-extern float complex firdecim_cccf_data_M4h13x40_y[];
+extern liquid_float_complex firdecim_cccf_data_M4h13x40_h[];
+extern liquid_float_complex firdecim_cccf_data_M4h13x40_x[];
+extern liquid_float_complex firdecim_cccf_data_M4h13x40_y[];
 
-extern float complex firdecim_cccf_data_M5h23x50_h[];
-extern float complex firdecim_cccf_data_M5h23x50_x[];
-extern float complex firdecim_cccf_data_M5h23x50_y[];
+extern liquid_float_complex firdecim_cccf_data_M5h23x50_h[];
+extern liquid_float_complex firdecim_cccf_data_M5h23x50_x[];
+extern liquid_float_complex firdecim_cccf_data_M5h23x50_y[];
 
 #endif // __LIQUID_FIRDECIM_H__
 

@@ -171,6 +171,20 @@ void liquid_autotest_print_array(unsigned char * _x,
 #define CONTEND_EQUALITY_FL(F,L,X,Y)      TEST_EQUALITY(F,L,#X,(X),#Y,(Y))
 #define CONTEND_EQUALITY(X,Y)             CONTEND_EQUALITY_FL(__FILE__,__LINE__,X,Y)
 
+// CONTEND_EQUALITY_COMPLEX (for complex numbers)
+#define TEST_EQUALITY_COMPLEX(F,L,EX,X,EY,Y)                        \
+{                                                                   \
+    if (LIQUID_AUTOTEST_VMAG((X)-(Y)) != 0)                         \
+    {                                                               \
+        liquid_autotest_failed_expr(F,L,"abs(" #X "-" #Y ")",       \
+            LIQUID_AUTOTEST_VMAG((X)-(Y)),"==","0",0);              \
+    } else {                                                        \
+         liquid_autotest_passed();                                  \
+    }                                                               \
+}
+#define CONTEND_EQUALITY_COMPLEX_FL(F,L,X,Y)  TEST_EQUALITY_COMPLEX(F,L,#X,(X),#Y,(Y))
+#define CONTEND_EQUALITY_COMPLEX(X,Y)         CONTEND_EQUALITY_COMPLEX_FL(__FILE__,__LINE__,X,Y)
+
 // CONTEND_INEQUALITY
 #define TEST_INEQUALITY(F,L,EX,X,EY,Y)                              \
 {                                                                   \
@@ -297,7 +311,7 @@ int liquid_autotest_validate_spectrum(float * _psd, unsigned int _nfft,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename);
 
 // validate spectral content of a signal (complex)
-int liquid_autotest_validate_psd_signal(float complex * _buf, unsigned int _buf_len,
+int liquid_autotest_validate_psd_signal(liquid_float_complex * _buf, unsigned int _buf_len,
         autotest_psd_s * _regions, unsigned int num_regions, const char * debug_filename);
 
 // validate spectral content of a signal (real)

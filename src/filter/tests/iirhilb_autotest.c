@@ -41,12 +41,12 @@ void autotest_iirhilbf_interp_decim()
     unsigned int num_samples = h_len + 2*m + 8;
 
     unsigned int i;
-    float complex buf_0[num_samples  ];
-    float         buf_1[num_samples*2];
-    float complex buf_2[num_samples  ];
+    LIQUID_VLA(liquid_float_complex, buf_0, num_samples  );
+    LIQUID_VLA(float, buf_1, num_samples*2);
+    LIQUID_VLA(liquid_float_complex, buf_2, num_samples  );
 
     // generate the baseband signal (filter pulse)
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     float w = 0.36f * bw; // pulse bandwidth
     liquid_firdes_kaiser(h_len,w,80.0f,0.0f,h);
     for (i=0; i<num_samples; i++)
@@ -63,20 +63,20 @@ void autotest_iirhilbf_interp_decim()
 
     // verify input spectrum
     autotest_psd_s regions_orig[] = {
-      {.fmin=-0.5,    .fmax=-0.5*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-0.3*bw, .fmax=+0.3*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=+0.5*bw, .fmax=+0.5,    .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,    .fmax=(float)(-0.5*bw), .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(-0.3*bw), .fmax=(float)(+0.3*bw), .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=(float)(+0.5*bw), .fmax=+0.5f,    .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signal(buf_0, num_samples, regions_orig, 3,
         liquid_autotest_verbose ? "autotest/logs/iirhilbf_orig.m" : NULL);
 
     // verify interpolated spectrum
     autotest_psd_s regions_interp[] = {
-      {.fmin=-0.5,          .fmax=-0.25-0.25*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-0.25-0.15*bw, .fmax=-0.25+0.15*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=-0.25+0.25*bw, .fmax=+0.25-0.25*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin= 0.25-0.15*bw, .fmax= 0.25+0.15*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin= 0.25+0.25*bw, .fmax= 0.5,          .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,          .fmax=(float)(-0.25-0.25*bw), .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(-0.25-0.15*bw), .fmax=(float)(-0.25+0.15*bw), .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=(float)(-0.25+0.25*bw), .fmax=(float)(+0.25-0.25*bw), .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(0.25-0.15*bw), .fmax=(float)(0.25+0.15*bw), .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=(float)(0.25+0.25*bw), .fmax=0.5f,          .pmin=0.0f, .pmax=(float)(-As+tol), .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signalf(buf_1, 2*num_samples, regions_interp, 5,
         liquid_autotest_verbose ? "autotest/logs/iirhilbf_interp.m" : NULL);
@@ -109,12 +109,12 @@ void autotest_iirhilbf_filter()
     unsigned int num_samples = h_len + 2*m + 8;
 
     unsigned int i;
-    float complex buf_0[num_samples];
-    float         buf_1[num_samples];
-    float complex buf_2[num_samples];
+    LIQUID_VLA(liquid_float_complex, buf_0, num_samples);
+    LIQUID_VLA(float, buf_1, num_samples);
+    LIQUID_VLA(liquid_float_complex, buf_2, num_samples);
 
     // generate the baseband signal (filter pulse)
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     float w = 0.36f * bw; // pulse bandwidth
     liquid_firdes_kaiser(h_len,w,80.0f,0.0f,h);
     for (i=0; i<num_samples; i++)
@@ -139,31 +139,31 @@ void autotest_iirhilbf_filter()
 
     // verify input spectrum
     autotest_psd_s regions_orig[] = {
-      {.fmin=-0.5,       .fmax= ft-0.03,   .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin= ft-0.01,   .fmax= ft+0.01,   .pmin=-40,.pmax= 0,      .test_lo=1, .test_hi=0},
-      {.fmin= ft+0.03,   .fmax= f0-0.5*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin= f0-0.3*bw, .fmax= f0+0.3*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=+f0+0.5*bw, .fmax=+0.5,       .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,       .fmax= ft-0.03f,   .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin= ft-0.01f,   .fmax= ft+0.01f,   .pmin=-40.0f,.pmax=0.0f,      .test_lo=1, .test_hi=0},
+      {.fmin= ft+0.03f,   .fmax= f0-0.5f*bw, .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin= f0-0.3f*bw, .fmax= f0+0.3f*bw, .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=+f0+0.5f*bw, .fmax=+0.5f,       .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signal(buf_0, num_samples, regions_orig, 5,
         liquid_autotest_verbose ? "autotest/logs/iirhilbf_filter_orig.m" : NULL);
 
     // verify interpolated spectrum
     autotest_psd_s regions_c2r[] = {
-      {.fmin=-0.5,       .fmax=-f0-0.5*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-f0-0.3*bw, .fmax=-f0+0.3*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=-f0+0.5*bw, .fmax=+f0-0.5*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin= f0-0.3*bw, .fmax= f0+0.3*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=+f0+0.5*bw, .fmax=+0.5,       .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,       .fmax=-f0-0.5f*bw, .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-f0-0.3f*bw, .fmax=-f0+0.3f*bw, .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=-f0+0.5f*bw, .fmax=+f0-0.5f*bw, .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin= f0-0.3f*bw, .fmax= f0+0.3f*bw, .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=+f0+0.5f*bw, .fmax=+0.5f,       .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signalf(buf_1, num_samples, regions_c2r, 5,
         liquid_autotest_verbose ? "autotest/logs/iirhilbf_filter_c2r.m" : NULL);
 
     // verify decimated spectrum (using same regions as original)
     autotest_psd_s regions_r2c[] = {
-      {.fmin=-0.5,       .fmax= f0-0.5*bw, .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
-      {.fmin= f0-0.3*bw, .fmax= f0+0.3*bw, .pmin=-1, .pmax=+1,      .test_lo=1, .test_hi=1},
-      {.fmin=+f0+0.5*bw, .fmax=+0.5,       .pmin= 0, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,       .fmax= f0-0.5f*bw, .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
+      {.fmin= f0-0.3f*bw, .fmax= f0+0.3f*bw, .pmin=-1.0f, .pmax=1.0f,      .test_lo=1, .test_hi=1},
+      {.fmin=+f0+0.5f*bw, .fmax=+0.5f,       .pmin=0.0f, .pmax=-As+tol, .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signal(buf_2, num_samples, regions_r2c, 3,
         liquid_autotest_verbose ? "autotest/logs/iirhilbf_filter_r2c.m" : NULL);
@@ -200,7 +200,7 @@ void autotest_iirhilbf_copy_interp()
     unsigned int i;
     float y0[2], y1[2];
     for (i=0; i<80; i++) {
-        float complex x = randnf() + _Complex_I*randnf();
+        liquid_float_complex x = randnf() + _Complex_I*randnf();
         iirhilbf_interp_execute(q0, x, y0);
     }
 
@@ -208,7 +208,7 @@ void autotest_iirhilbf_copy_interp()
     iirhilbf q1 = iirhilbf_copy(q0);
 
     for (i=0; i<80; i++) {
-        float complex x = randnf() + _Complex_I*randnf();
+        liquid_float_complex x = randnf() + _Complex_I*randnf();
         iirhilbf_interp_execute(q0, x, y0);
         iirhilbf_interp_execute(q1, x, y1);
         if (liquid_autotest_verbose) {
@@ -231,8 +231,8 @@ void autotest_iirhilbf_copy_decim()
 
     // run interpolator on random data
     unsigned int i;
-    float x[2];
-    float complex y0, y1;
+    LIQUID_VLA(float, x, 2);
+    liquid_float_complex y0, y1;
     for (i=0; i<80; i++) {
         x[0] = randnf();
         x[1] = randnf();
@@ -250,7 +250,7 @@ void autotest_iirhilbf_copy_decim()
             printf("%3u : {%12.8f %12.8f} > %12.8f +j%12.8f, %12.8f +j%12.8f\n",
                     i, x[0], x[1], crealf(y0), cimagf(y0), crealf(y1), cimagf(y1));
         }
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy filter objects

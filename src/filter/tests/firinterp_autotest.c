@@ -57,7 +57,7 @@ void autotest_firinterp_rrrf_generic()
     firinterp_rrrf q = firinterp_rrrf_create(M,h,9);
 
     float x[] = {1.0, -1.0, 1.0, 1.0};
-    float y[16];
+    LIQUID_VLA(float, y, 16);
     float test[16] = {
       -0.2762293319046737,
        1.4757679031218007,
@@ -114,18 +114,18 @@ void autotest_firinterp_crcf_generic()
     firinterp_crcf q = firinterp_crcf_create(M,h,9);
 
     //  x = [1+j*0.2, -0.2+j*1.3, 0.5+j*0.3, 1.1-j*0.2]
-    float complex x[4] = {
+    liquid_float_complex x[4] = {
       1.0000e+00+  2.0000e-01*_Complex_I, 
      -2.0000e-01+  1.3000e+00*_Complex_I, 
       5.0000e-01+  3.0000e-01*_Complex_I, 
       1.1000e+00+ -2.0000e-01*_Complex_I
     };
         
-    float complex y[16];
+    LIQUID_VLA(liquid_float_complex, y, 16);
 
     // z = [x(1) 0 0 0 x(2) 0 0 0 x(3) 0 0 0 x(4) 0 0 0];
     // test = filter(h,1,z)
-    float complex test[16] = {
+    liquid_float_complex test[16] = {
       -0.7393353832652201 - 0.1478670766530440*_Complex_I,
        0.1909821993029451 + 0.0381964398605890*_Complex_I,
       -1.7013834621383086 - 0.3402766924276617*_Complex_I,
@@ -176,8 +176,8 @@ void testbench_firinterp_crcf_nyquist(int          _ftype,
 
     // create input buffer of symbols to interpolate
     unsigned int num_symbols = _m+16;   //
-    float complex x[num_symbols];       // input symbols
-    float complex y[_M];                // output interp buffer
+    LIQUID_VLA(liquid_float_complex, x, num_symbols);       // input symbols
+    LIQUID_VLA(liquid_float_complex, y, _M);                // output interp buffer
     unsigned int i;
     for (i=0; i<num_symbols; i++)
         x[i] = cexpf(_Complex_I*0.7f*(float)i);
@@ -226,9 +226,9 @@ void autotest_firinterp_copy()
 
     // run samples through filter
     unsigned int i;
-    float complex buf_0[3], buf_1[3];
+    liquid_float_complex buf_0[3], buf_1[3];
     for (i=0; i<20; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         firinterp_crcf_execute(q0, v, buf_0);
     }
 
@@ -237,11 +237,11 @@ void autotest_firinterp_copy()
 
     // run samples through both filters in parallel
     for (i=0; i<60; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         firinterp_crcf_execute(q0, v, buf_0);
         firinterp_crcf_execute(q1, v, buf_1);
 
-        CONTEND_SAME_DATA( buf_0, buf_1, 3*sizeof(float complex) );
+        CONTEND_SAME_DATA( buf_0, buf_1, 3*sizeof(liquid_float_complex) );
     }
 
     // destroy objects
@@ -258,9 +258,9 @@ void autotest_firinterp_flush()
 
     // run samples through filter
     unsigned int i;
-    float complex buf[3];
+    LIQUID_VLA(liquid_float_complex, buf, 3);
     for (i=0; i<20; i++) {
-        float complex v = randnf() + _Complex_I*randnf();
+        liquid_float_complex v = randnf() + _Complex_I*randnf();
         firinterp_crcf_execute(q, v, buf);
     }
 

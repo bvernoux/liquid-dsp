@@ -54,7 +54,7 @@ void autotest_bpacketsync()
     fec_scheme fec1 = LIQUID_FEC_NONE;      // outer code
 
     // create packet generator
-    bpacketgen pg = bpacketgen_create(0, dec_msg_len, check, fec0, fec1);
+    bpacketgen pg = bpacketgen_create(0, dec_msg_len, (crc_scheme)check, (fec_scheme)fec0, fec1);
     if (liquid_autotest_verbose)
         bpacketgen_print(pg);
 
@@ -62,8 +62,8 @@ void autotest_bpacketsync()
     unsigned int enc_msg_len = bpacketgen_get_packet_len(pg);
 
     // initialize arrays
-    unsigned char msg_org[dec_msg_len]; // original message
-    unsigned char msg_enc[enc_msg_len]; // encoded message
+    LIQUID_VLA(unsigned char, msg_org, dec_msg_len); // original message
+    LIQUID_VLA(unsigned char, msg_enc, enc_msg_len); // encoded message
 
     unsigned int num_packets_found=0;
 

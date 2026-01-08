@@ -21,7 +21,9 @@
  */
 
 #include <stdlib.h>
+#ifndef _MSC_VER
 #include <complex.h>
+#endif
 #include "autotest/autotest.h"
 #include "liquid.h"
 
@@ -34,13 +36,13 @@ void testbench_nco_crcf_mix(int   _type,
     float        tol     = 1e-2f;
 
     // create and initialize object
-    nco_crcf nco = nco_crcf_create(_type);
+    nco_crcf nco = nco_crcf_create((liquid_ncotype)_type);
     nco_crcf_set_phase    (nco, _phase);
     nco_crcf_set_frequency(nco, _frequency);
 
     // generate signal (pseudo-random)
-    float complex buf_0[buf_len];
-    float complex buf_1[buf_len];
+    LIQUID_VLA(liquid_float_complex, buf_0, buf_len);
+    LIQUID_VLA(liquid_float_complex, buf_1, buf_len);
     unsigned int i;
     for (i=0; i<buf_len; i++)
         buf_0[i] = cexpf(_Complex_I*2*M_PI*randf());
@@ -51,7 +53,7 @@ void testbench_nco_crcf_mix(int   _type,
     // compare result to expected
     float theta = _phase;
     for (i=0; i<buf_len; i++) {
-        float complex v = buf_0[i] * cexpf(_Complex_I*theta);
+        liquid_float_complex v = buf_0[i] * cexpf(_Complex_I*theta);
         CONTEND_DELTA( crealf(buf_1[i]), crealf(v), tol);
         CONTEND_DELTA( cimagf(buf_1[i]), cimagf(v), tol);
 

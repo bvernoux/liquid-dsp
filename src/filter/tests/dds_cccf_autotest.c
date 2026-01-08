@@ -46,12 +46,12 @@ void testbench_dds_cccf(unsigned int _num_stages,   // number of half-band stage
     unsigned int num_samples = h_len + delay_interp + (unsigned int) delay_decim + 8;
 
     unsigned int i;
-    float complex * buf_0 = (float complex*) malloc(num_samples  *sizeof(float complex)); // input
-    float complex * buf_1 = (float complex*) malloc(num_samples*r*sizeof(float complex)); // interpolated
-    float complex * buf_2 = (float complex*) malloc(num_samples  *sizeof(float complex)); // decimated
+    liquid_float_complex * buf_0 = (liquid_float_complex*) malloc(num_samples  *sizeof(liquid_float_complex)); // input
+    liquid_float_complex * buf_1 = (liquid_float_complex*) malloc(num_samples*r*sizeof(liquid_float_complex)); // interpolated
+    liquid_float_complex * buf_2 = (liquid_float_complex*) malloc(num_samples  *sizeof(liquid_float_complex)); // decimated
 
     // generate the baseband signal (filter pulse)
-    float h[h_len];
+    LIQUID_VLA(float, h, h_len);
     float w = 0.36f * bw; // pulse bandwidth
     liquid_firdes_kaiser(h_len,w,_as,0.0f,h);
     for (i=0; i<num_samples; i++)
@@ -71,19 +71,19 @@ void testbench_dds_cccf(unsigned int _num_stages,   // number of half-band stage
 
     // verify input spectrum
     autotest_psd_s regions_orig[] = {
-      {.fmin=-0.5,    .fmax=-0.6*bw, .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
-      {.fmin=-0.3*bw, .fmax=+0.3*bw, .pmin=-1, .pmax=+1,       .test_lo=1, .test_hi=1},
-      {.fmin=+0.6*bw, .fmax=+0.5,    .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f,    .fmax=(float)(-0.6*bw), .pmin=0.0f, .pmax=(float)(-_as+tol), .test_lo=0, .test_hi=1},
+      {.fmin=(float)(-0.3*bw), .fmax=(float)(+0.3*bw), .pmin=-1.0f, .pmax=1.0f,       .test_lo=1, .test_hi=1},
+      {.fmin=(float)(+0.6*bw), .fmax=+0.5f,    .pmin=0.0f, .pmax=(float)(-_as+tol), .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signal(buf_0, num_samples, regions_orig, 3,
         liquid_autotest_verbose ? "autotest/logs/dds_cccf_orig.m" : NULL);
 
     // verify interpolated spectrum
-    float f1 = _fc-0.6*bw/r, f2 = _fc-0.3*bw/r, f3 = _fc+0.3*bw/r, f4 = _fc+0.6*bw/r;
+    float f1 = (float)(_fc-0.6*bw/r), f2 = (float)(_fc-0.3*bw/r), f3 = (float)(_fc+0.3*bw/r), f4 = (float)(_fc+0.6*bw/r);
     autotest_psd_s regions_interp[] = {
-      {.fmin=-0.5, .fmax=f1,   .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
-      {.fmin= f2,  .fmax=f3,   .pmin=-1, .pmax=+1,       .test_lo=1, .test_hi=1},
-      {.fmin= f4,  .fmax=+0.5, .pmin= 0, .pmax=-_as+tol, .test_lo=0, .test_hi=1},
+      {.fmin=-0.5f, .fmax=f1,   .pmin=0.0f, .pmax=(float)(-_as+tol), .test_lo=0, .test_hi=1},
+      {.fmin= f2,  .fmax=f3,   .pmin=-1.0f, .pmax=1.0f,       .test_lo=1, .test_hi=1},
+      {.fmin= f4,  .fmax=+0.5f, .pmin=0.0f, .pmax=(float)(-_as+tol), .test_lo=0, .test_hi=1},
     };
     liquid_autotest_validate_psd_signal(buf_1, r*num_samples, regions_interp, 3,
         liquid_autotest_verbose ? "autotest/logs/dds_cccf_interp.m" : NULL);
@@ -132,9 +132,9 @@ void autotest_dds_config()
 
     // test setting/getting properties
     dds_cccf_set_scale(q, 2.0f - _Complex_I*3.0f);
-    float complex scale = 0.0f;
+    liquid_float_complex scale = 0.0f;
     dds_cccf_get_scale(q, &scale);
-    CONTEND_EQUALITY(scale, 2.0f - _Complex_I*3.0f);
+    CONTEND_EQUALITY_COMPLEX(scale, 2.0f - _Complex_I*3.0f);
 
     // destroy object
     dds_cccf_destroy(q);
@@ -154,8 +154,8 @@ void autotest_dds_copy()
     symstreamrcf gen = symstreamrcf_create();
 
     // generate samples and push through resampler
-    float complex buf[r]; // input buffer
-    float complex y0, y1; // output samples
+    LIQUID_VLA(liquid_float_complex, buf, r); // input buffer
+    liquid_float_complex y0, y1; // output samples
     unsigned int i;
     for (i=0; i<10; i++) {
         // generate block of samples
@@ -178,7 +178,7 @@ void autotest_dds_copy()
         dds_cccf_decim_execute(q1, buf, &y1);
 
         // compare output
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy objects

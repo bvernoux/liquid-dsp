@@ -30,7 +30,7 @@ void modemcf_test_copy(modulation_scheme _ms)
     // create modem and randomize internal state
     modemcf modem_0 = modemcf_create(_ms);
     unsigned int i, s0, s1, M = 1 << modemcf_get_bps(modem_0);
-    float complex x0, x1;
+    liquid_float_complex x0, x1;
     for (i=0; i<10; i++) {
         // modulate random symbol
         modemcf_modulate(modem_0, rand() % M, &x0);
@@ -55,10 +55,10 @@ void modemcf_test_copy(modulation_scheme _ms)
         unsigned int s = rand() % M;
         modemcf_modulate(modem_0, s, &x0);
         modemcf_modulate(modem_1, s, &x1);
-        CONTEND_EQUALITY(x0, x1);
+        CONTEND_EQUALITY_COMPLEX(x0, x1);
 
         // demodulate random sample
-        float complex x = randnf() + _Complex_I*randnf();
+        liquid_float_complex x = randnf() + _Complex_I*randnf();
         modemcf_demodulate(modem_0, x, &s0);
         modemcf_demodulate(modem_1, x, &s1);
         CONTEND_EQUALITY(s0, s1)
@@ -145,7 +145,7 @@ void autotest_modem_config()
     // test copying/creating invalid objects
     CONTEND_ISNULL( modemcf_copy(NULL) );
     CONTEND_ISNULL( modemcf_create(LIQUID_MODEM_ARB) );
-    CONTEND_ISNULL( modemcf_create(-1) );
+    CONTEND_ISNULL( modemcf_create((modulation_scheme)-1) );
 
     // create object and check configuration
     modemcf q = modemcf_create(LIQUID_MODEM_QAM64);
@@ -156,7 +156,7 @@ void autotest_modem_config()
     CONTEND_INEQUALITY( LIQUID_OK, modemcf_init(q,77) );
 
     // internal: try to modulate using invalid inputs
-    float complex sym;
+    liquid_float_complex sym;
     CONTEND_INEQUALITY( LIQUID_OK, modemcf_modulate    (q,8193,&sym) );
     CONTEND_INEQUALITY( LIQUID_OK, modemcf_modulate_map(q,8193,&sym) );
     CONTEND_INEQUALITY( LIQUID_OK, modemcf_demodsoft_gentab(q,227) );

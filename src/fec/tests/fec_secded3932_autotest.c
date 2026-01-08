@@ -32,18 +32,18 @@
 void autotest_secded3932_codec_e0()
 {
     // generate symbol
-    unsigned char sym_org[4];
+    LIQUID_VLA(unsigned char, sym_org, 4);
     sym_org[0] = rand() & 0xffff;
     sym_org[1] = rand() & 0xffff;
     sym_org[2] = rand() & 0xffff;
     sym_org[3] = rand() & 0xffff;
 
     // encoded symbol
-    unsigned char sym_enc[5];
+    LIQUID_VLA(unsigned char, sym_enc, 5);
     fec_secded3932_encode_symbol(sym_org, sym_enc);
 
     // decoded symbol
-    unsigned char sym_dec[4];
+    LIQUID_VLA(unsigned char, sym_dec, 4);
     fec_secded3932_decode_symbol(sym_enc, sym_dec);
 
     // validate data are the same
@@ -62,14 +62,14 @@ void autotest_secded3932_codec_e1()
 
     for (k=0; k<39; k++) {
         // generate symbol
-        unsigned char sym_org[4];
+        LIQUID_VLA(unsigned char, sym_org, 4);
         sym_org[0] = rand() & 0xffff;
         sym_org[1] = rand() & 0xffff;
         sym_org[2] = rand() & 0xffff;
         sym_org[3] = rand() & 0xffff;
 
         // encoded symbol
-        unsigned char sym_enc[5];
+        LIQUID_VLA(unsigned char, sym_enc, 5);
         fec_secded3932_encode_symbol(sym_org, sym_enc);
 
         // generate error vector (single error)
@@ -78,7 +78,7 @@ void autotest_secded3932_codec_e1()
         e[5-d.quot-1] = 1 << d.rem;
 
         // received symbol
-        unsigned char sym_rec[5];
+        LIQUID_VLA(unsigned char, sym_rec, 5);
         sym_rec[0] = sym_enc[0] ^ e[0];
         sym_rec[1] = sym_enc[1] ^ e[1];
         sym_rec[2] = sym_enc[2] ^ e[2];
@@ -86,7 +86,7 @@ void autotest_secded3932_codec_e1()
         sym_rec[4] = sym_enc[4] ^ e[4];
 
         // decoded symbol
-        unsigned char sym_dec[4];
+        LIQUID_VLA(unsigned char, sym_dec, 4);
         fec_secded3932_decode_symbol(sym_rec, sym_dec);
 
         // validate data are the same
@@ -113,14 +113,14 @@ void autotest_secded3932_codec_e2()
         
         for (k=0; k<39-1-j; k++) {
             // generate symbol
-            unsigned char sym_org[4];
+            LIQUID_VLA(unsigned char, sym_org, 4);
             sym_org[0] = rand() & 0xffff;
             sym_org[1] = rand() & 0xffff;
             sym_org[2] = rand() & 0xffff;
             sym_org[3] = rand() & 0xffff;
 
             // encoded symbol
-            unsigned char sym_enc[5];
+            LIQUID_VLA(unsigned char, sym_enc, 5);
             fec_secded3932_encode_symbol(sym_org, sym_enc);
 
             // generate error vector (single error)
@@ -133,7 +133,7 @@ void autotest_secded3932_codec_e2()
             e[5-dk.quot-1] |= 1 << dk.rem;
 
             // received symbol
-            unsigned char sym_rec[5];
+            LIQUID_VLA(unsigned char, sym_rec, 5);
             sym_rec[0] = sym_enc[0] ^ e[0];
             sym_rec[1] = sym_enc[1] ^ e[1];
             sym_rec[2] = sym_enc[2] ^ e[2];
@@ -141,7 +141,7 @@ void autotest_secded3932_codec_e2()
             sym_rec[4] = sym_enc[4] ^ e[4];
 
             // decoded symbol
-            unsigned char sym_dec[4];
+            LIQUID_VLA(unsigned char, sym_dec, 4);
             int syndrome_flag = fec_secded3932_decode_symbol(sym_rec, sym_dec);
 
 

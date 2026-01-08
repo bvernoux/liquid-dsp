@@ -26,18 +26,18 @@
 // generic window testbench
 void liquid_window_testbench(int _wtype, unsigned int _n, float _arg)
 {
-    float w[_n];
+    LIQUID_VLA(float, w, _n);
     float wsum = 0.0f;
     unsigned int i;
     for (i=0; i<_n; i++) {
-        w[i] = liquid_windowf(_wtype, i, _n, _arg);
+        w[i] = liquid_windowf((liquid_window_type)_wtype, i, _n, _arg);
         wsum += w[i];
     }
 
     // compute spectral response
     unsigned int nfft = 1200;
-    float complex buf_time[nfft];
-    float complex buf_freq[nfft];
+    LIQUID_VLA(liquid_float_complex, buf_time, nfft);
+    LIQUID_VLA(liquid_float_complex, buf_freq, nfft);
     for (i=0; i<nfft; i++)
         buf_time[i] = i < _n ? w[i]/wsum : 0.0f;
     fft_run(nfft, buf_time, buf_freq, LIQUID_FFT_FORWARD, 0);
@@ -95,11 +95,11 @@ void liquid_kbd_window_test(unsigned int _n, float _beta)
     float tol = 1e-3f;
 
     // compute window
-    float w[_n];
+    LIQUID_VLA(float, w, _n);
     liquid_kbd_window(_n,_beta,w);
 
     // square window
-    float w2[_n];
+    LIQUID_VLA(float, w2, _n);
     for (i=0; i<_n; i++)
         w2[i] = w[i]*w[i];
 
@@ -144,7 +144,7 @@ void autotest_window_config()
     CONTEND_EQUALITY(liquid_kbd( 0,  0, 10.0f), 0.0f); // window length is zero
     CONTEND_EQUALITY(liquid_kbd(12, 27, 10.0f), 0.0f); // window length is odd
 
-    float w[20];
+    LIQUID_VLA(float, w, 20);
     CONTEND_INEQUALITY(liquid_kbd_window( 0, 10.0f, w), LIQUID_OK); // length is zero
     CONTEND_INEQUALITY(liquid_kbd_window( 7, 10.0f, w), LIQUID_OK); // length is odd
     CONTEND_INEQUALITY(liquid_kbd_window(20, -1.0f, w), LIQUID_OK); // beta value is negative

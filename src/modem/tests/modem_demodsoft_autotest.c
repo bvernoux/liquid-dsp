@@ -40,8 +40,8 @@ void modemcf_test_demodsoft(modulation_scheme _ms)
     // run the test
     unsigned int i, s, M=1<<bps;
     unsigned int sym_soft;
-    unsigned char soft_bits[bps];
-    float complex x;
+    LIQUID_VLA(unsigned char, soft_bits, bps);
+    liquid_float_complex x;
     
     for (i=0; i<M; i++) {
         // modulate symbol

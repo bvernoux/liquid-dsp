@@ -39,7 +39,7 @@ void xautotest_channel_copy()
 
     // run samples through original object
     unsigned int i;
-    float complex x, y0, y1;
+    liquid_float_complex x, y0, y1;
     for (i=0; i<120; i++) {
         x = randnf() + _Complex_I*randnf();
         channel_cccf_execute(q0, x, &y0);
@@ -55,7 +55,7 @@ void xautotest_channel_copy()
         channel_cccf_execute(q0, x, &y0);
         channel_cccf_execute(q1, x, &y1);
 
-        CONTEND_EQUALITY(y0, y1);
+        CONTEND_EQUALITY_COMPLEX(y0, y1);
     }
 
     // destroy filter objects

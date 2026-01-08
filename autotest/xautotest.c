@@ -29,9 +29,16 @@ char __docstr__[] =
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <getopt.h>
 #include <time.h>
+
+// Windows compatibility for sys/resource.h and getopt.h
+#ifdef _WIN32
+#include "liquid_win32_compat.h"
+#include <windows.h>
+#else
 #include <sys/resource.h>
+#endif
+#include <getopt.h>
 #include "liquid.internal.h"
 #include "liquid.argparse.h"
 #include "autotest/autotest.h"
@@ -84,7 +91,7 @@ void execute_autotest(autotest_t * _test, int _verbose);
 void execute_package(package_t * _p, int _verbose);
 
 // execute a specific package if string matches
-void execute_package_search(package_t * _p, char * _str, int _verbose);
+void execute_package_search(package_t * _p, const char * _str, int _verbose);
 
 // print all autotest results
 void print_autotest_results(autotest_t * _test);
@@ -329,7 +336,7 @@ void execute_package(package_t * _p,
 }
 
 // execute a specific package if string matches
-void execute_package_search(package_t * _p, char * _str, int _verbose)
+void execute_package_search(package_t * _p, const char * _str, int _verbose)
 {
     // see if search string matches autotest name
     if (strstr(_p->name, _str) != NULL) {

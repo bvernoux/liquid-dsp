@@ -36,7 +36,7 @@ void autotest_matrixf_add()
     // x [size: 5 x 4]
     // y [size: 5 x 4]
     // z [size: 5 x 4]
-    float z[20];
+    LIQUID_VLA(float, z, 20);
     matrixf_add(matrixf_data_add_x,
                 matrixf_data_add_y,
                 z,
@@ -55,7 +55,7 @@ void autotest_matrixf_aug()
     // x [size: 5 x 4]
     // y [size: 5 x 3]
     // z [size: 5 x 7]
-    float z[35];
+    LIQUID_VLA(float, z, 35);
     matrixf_aug(matrixf_data_aug_x, 5, 4,
                 matrixf_data_aug_y, 5, 3,
                 z,                  5, 7);
@@ -82,7 +82,7 @@ void autotest_matrixf_cgsolve()
     // A [size: 8 x 8], symmetric positive definite matrx
     // x [size: 8 x 1]
     // b [size: 8 x 1]
-    float x[8];
+    LIQUID_VLA(float, x, 8);
     matrixf_cgsolve(matrixf_data_cgsolve_A, 8,
                     matrixf_data_cgsolve_b,
                     x, NULL);
@@ -107,7 +107,7 @@ void autotest_matrixf_chol()
 
     // A [size: 4 x 4]
     // L [size: 4 x 4]
-    float L[16];
+    LIQUID_VLA(float, L, 16);
 
     // run decomposition
     matrixf_chol(matrixf_data_chol_A, 4, L);
@@ -131,7 +131,7 @@ void autotest_matrixf_gramschmidt()
 
     // A [size: 4 x 3]
     // V [size: 4 x 3]
-    float V[12];
+    LIQUID_VLA(float, V, 12);
     matrixf_gramschmidt(matrixf_data_gramschmidt_A, 4, 3, V);
 
     if (liquid_autotest_verbose) {
@@ -154,7 +154,7 @@ void autotest_matrixf_inv()
 
     // x [size: 5 x 5]
     // y [size: 5 x 5]
-    float y[25];
+    LIQUID_VLA(float, y, 25);
     memmove(y, matrixf_data_inv_x, 5*5*sizeof(float));
     matrixf_inv(y, 5, 5);
 
@@ -178,7 +178,7 @@ void autotest_matrixf_linsolve()
     // A [size: 5 x 5]
     // x [size: 5 x 1]
     // b [size: 5 x 1]
-    float x[5];
+    LIQUID_VLA(float, x, 5);
     
     // run solver
     matrixf_linsolve(matrixf_data_linsolve_A, 5,
@@ -204,11 +204,11 @@ void autotest_matrixf_ludecomp_crout()
 {
     float tol = 1e-6f;  // error tolerance
 
-    float L[64];
-    float U[64];
-    float P[64];
+    LIQUID_VLA(float, L, 64);
+    LIQUID_VLA(float, U, 64);
+    LIQUID_VLA(float, P, 64);
 
-    float LU_test[64];
+    LIQUID_VLA(float, LU_test, 64);
 
     // run decomposition
     matrixf_ludecomp_crout(matrixf_data_ludecomp_A, 8, 8, L, U, P);
@@ -249,11 +249,11 @@ void autotest_matrixf_ludecomp_doolittle()
 {
     float tol = 1e-6f;  // error tolerance
 
-    float L[64];
-    float U[64];
-    float P[64];
+    LIQUID_VLA(float, L, 64);
+    LIQUID_VLA(float, U, 64);
+    LIQUID_VLA(float, P, 64);
 
-    float LU_test[64];
+    LIQUID_VLA(float, LU_test, 64);
 
     // run decomposition
     matrixf_ludecomp_doolittle(matrixf_data_ludecomp_A, 8, 8, L, U, P);
@@ -297,7 +297,7 @@ void autotest_matrixf_mul()
     // x [size: 5 x 4]
     // y [size: 4 x 3]
     // z [size: 5 x 3]
-    float z[35];
+    LIQUID_VLA(float, z, 35);
     matrixf_mul(matrixf_data_mul_x, 5, 4,
                 matrixf_data_mul_y, 4, 3,
                 z,                  5, 3);
@@ -321,11 +321,11 @@ void autotest_matrixf_qrdecomp()
 {
     float tol = 1e-4f;  // error tolerance
 
-    float Q[16];
-    float R[16];
+    LIQUID_VLA(float, Q, 16);
+    LIQUID_VLA(float, R, 16);
 
-    float QR_test[16];  // Q*R
-    float QQT_test[16]; // Q*Q^T
+    LIQUID_VLA(float, QR_test, 16);  // Q*R
+    LIQUID_VLA(float, QQT_test, 16); // Q*Q^T
 
     // run decomposition
     matrixf_qrdecomp_gramschmidt(matrixf_data_qrdecomp_A, 4, 4, Q, R);
@@ -356,7 +356,7 @@ void autotest_matrixf_qrdecomp()
         CONTEND_DELTA( matrixf_data_qrdecomp_A[i], QR_test[i], tol );
 
     // ensure Q*Q = I(4)
-    float I4[16];
+    LIQUID_VLA(float, I4, 16);
     matrixf_eye(I4,4);
     for (i=0; i<16; i++)
         CONTEND_DELTA( QQT_test[i], I4[i], tol );
@@ -373,10 +373,10 @@ void autotest_matrixf_transmul()
 {
     float tol = 1e-4f;  // error tolerance
 
-    float xxT[25];      // [size: 5 x 5]
-    float xxH[25];      // [size: 5 x 5]
-    float xTx[16];      // [size: 4 x 4]
-    float xHx[16];      // [size: 4 x 4]
+    LIQUID_VLA(float, xxT, 25);      // [size: 5 x 5]
+    LIQUID_VLA(float, xxH, 25);      // [size: 5 x 5]
+    LIQUID_VLA(float, xTx, 16);      // [size: 4 x 4]
+    LIQUID_VLA(float, xHx, 16);      // [size: 4 x 4]
 
     // run matrix multiplications
     matrixf_mul_transpose(matrixf_data_transmul_x, 5, 4, xxT);

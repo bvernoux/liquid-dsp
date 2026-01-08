@@ -44,8 +44,8 @@ void testbench_symstreamrcf_delay(float        _bw,
 
     // compute buffer length based on delay
     unsigned int  nfft = 2*(120 + (unsigned int)(delay/sqrtf(_bw)));
-    float complex buf_time[nfft];
-    float complex buf_freq[nfft];
+    LIQUID_VLA(liquid_float_complex, buf_time, nfft);
+    LIQUID_VLA(liquid_float_complex, buf_freq, nfft);
 
     // write samples to buffer
     symstreamrcf_write_samples(gen, buf_time, 1);
@@ -60,7 +60,7 @@ void testbench_symstreamrcf_delay(float        _bw,
 
     // measure phase slope across pass-band
     unsigned int m = 0.4 * _bw * nfft; // use 0.4 to account for filter roll-off
-    float complex p = 0.0f;
+    liquid_float_complex p = 0.0f;
     int i;
     for (i=-(int)m; i<(int)m; i++)
         p += buf_freq[(nfft+i)%nfft] * conjf(buf_freq[(nfft+i+1)%nfft]);

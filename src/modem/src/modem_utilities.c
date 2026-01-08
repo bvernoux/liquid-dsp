@@ -112,7 +112,7 @@ modulation_scheme liquid_getopt_str2mod(const char * _str)
     unsigned int i;
     for (i=0; i<LIQUID_MODEM_NUM_SCHEMES; i++) {
         if (strcmp(_str,modulation_types[i].name)==0)
-            return i;
+            return (modulation_scheme)i;
     }
     liquid_error(LIQUID_EICONFIG,"liquid_getopt_str2mod(), unknown/unsupported mod scheme: %s", _str);
     return LIQUID_MODEM_UNKNOWN;

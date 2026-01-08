@@ -35,7 +35,7 @@ void autotest_firfilt_crcf_copy()
     // start running input through filter
     unsigned int n = 32;
     unsigned int i;
-    float complex x, y_orig, y_copy;
+    liquid_float_complex x, y_orig, y_copy;
     for (i=0; i<n; i++) {
         x = randnf() + _Complex_I*randnf();
         firfilt_crcf_push(filt_orig, x);
@@ -59,7 +59,7 @@ void autotest_firfilt_crcf_copy()
                     crealf(y_copy), cimagf(y_copy),
                     error);
         }
-        CONTEND_EQUALITY(y_orig, y_copy);
+        CONTEND_EQUALITY_COMPLEX(y_orig, y_copy);
     }
 
     // destroy filter objects
